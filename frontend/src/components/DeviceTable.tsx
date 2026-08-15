@@ -44,7 +44,7 @@ function formatDeviceName(device: DeviceRecord) {
 export default function DeviceTable({ devices }: DeviceTableProps) {
   if (devices.length === 0) {
     return (
-      <div className="flex min-h-[120px] items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-slate-600">
+      <div className="flex min-h-30 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-slate-600">
         No device records yet.
       </div>
     );
