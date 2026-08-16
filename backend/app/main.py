@@ -1,6 +1,22 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.devices import router as devices_router
 
 app = FastAPI(title="Device Register API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+def health_check():
+    return {"status": "ok"}
+
+
 app.include_router(devices_router, prefix="/devices", tags=["devices"])
