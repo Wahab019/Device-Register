@@ -63,6 +63,13 @@ def update_device(device_id: str, device: DeviceUpdate):
             raise ValueError("Supabase client is not configured")
 
         update_data = device.model_dump(exclude_none=True)
+
+        if device.status in {"completed", "picked_up"} and "date_completed" not in device.model_fields_set:
+            update_data["date_completed"] = datetime.now(timezone.utc).isoformat()
+
+        if device.status in {"pending", "in_progress"}:
+            update_data["date_completed"] = None
+
         update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
 
         result = supabase.table("device_records").update(update_data).eq("id", device_id).execute()
