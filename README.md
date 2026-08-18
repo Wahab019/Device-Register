@@ -1,4 +1,4 @@
-# Customer Device Register
+# Device Register
 
 A lightweight internal tool for logging and tracking customer devices submitted for repair or servicing.
 
