@@ -96,10 +96,10 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-5 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="grid gap-5 md:grid-cols-2">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="customer_name" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="customer_name" className="block text-sm font-medium text-slate-300">
             Customer Name
           </label>
           <input
@@ -108,12 +108,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             value={formData.customer_name}
             onChange={(event) => updateField("customer_name", event.target.value)}
             required
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm"
+            placeholder="John Doe"
           />
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="customer_phone" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="customer_phone" className="block text-sm font-medium text-slate-300">
             Customer Phone
           </label>
           <input
@@ -122,12 +123,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             value={formData.customer_phone}
             onChange={(event) => updateField("customer_phone", event.target.value)}
             required
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm"
+            placeholder="(555) 123-4567"
           />
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="customer_email" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="customer_email" className="block text-sm font-medium text-slate-300">
             Customer Email
           </label>
           <input
@@ -135,12 +137,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             type="email"
             value={formData.customer_email ?? ""}
             onChange={(event) => updateField("customer_email", event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm"
+            placeholder="john@example.com"
           />
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="device_type" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="device_type" className="block text-sm font-medium text-slate-300">
             Device Type
           </label>
           <input
@@ -149,12 +152,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             value={formData.device_type}
             onChange={(event) => updateField("device_type", event.target.value)}
             required
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm"
+            placeholder="Laptop, Phone, etc."
           />
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="device_brand" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="device_brand" className="block text-sm font-medium text-slate-300">
             Device Brand
           </label>
           <input
@@ -162,12 +166,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             type="text"
             value={formData.device_brand ?? ""}
             onChange={(event) => updateField("device_brand", event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm"
+            placeholder="Apple, Samsung, etc."
           />
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="device_model" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="device_model" className="block text-sm font-medium text-slate-300">
             Device Model
           </label>
           <input
@@ -175,12 +180,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             type="text"
             value={formData.device_model ?? ""}
             onChange={(event) => updateField("device_model", event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm"
+            placeholder="MacBook Pro 14, Galaxy S23..."
           />
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="serial_number" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="serial_number" className="block text-sm font-medium text-slate-300">
             Serial Number
           </label>
           <input
@@ -188,12 +194,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             type="text"
             value={formData.serial_number ?? ""}
             onChange={(event) => updateField("serial_number", event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm"
+            placeholder="SN-123456789"
           />
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="date_received" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="date_received" className="block text-sm font-medium text-slate-300">
             Date Received
           </label>
           <input
@@ -201,13 +208,14 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             type="date"
             value={formData.date_received}
             onChange={(event) => updateField("date_received", event.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm"
+            style={{ colorScheme: 'dark' }}
           />
         </div>
 
         {initialData && (
           <div className="space-y-2 md:col-span-1">
-            <label htmlFor="status" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="status" className="block text-sm font-medium text-slate-300">
               Status
             </label>
             <select
@@ -223,18 +231,18 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
                     | "picked_up",
                 )
               }
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl glass-input px-4 py-3 text-sm appearance-none"
             >
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="picked_up">Picked Up</option>
+              <option value="pending" className="bg-slate-800">Pending</option>
+              <option value="in_progress" className="bg-slate-800">In Progress</option>
+              <option value="completed" className="bg-slate-800">Completed</option>
+              <option value="picked_up" className="bg-slate-800">Picked Up</option>
             </select>
           </div>
         )}
 
         <div className="space-y-2 md:col-span-2">
-          <label htmlFor="issue_description" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="issue_description" className="block text-sm font-medium text-slate-300">
             Issue Description
           </label>
           <textarea
@@ -243,12 +251,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             onChange={(event) => updateField("issue_description", event.target.value)}
             required
             rows={4}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm resize-none"
+            placeholder="Describe the issue reported by the customer..."
           />
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <label htmlFor="notes" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="notes" className="block text-sm font-medium text-slate-300">
             Notes
           </label>
           <textarea
@@ -256,24 +265,36 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             value={formData.notes ?? ""}
             onChange={(event) => updateField("notes", event.target.value)}
             rows={3}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl glass-input px-4 py-3 text-sm resize-none"
+            placeholder="Any additional notes or internal details..."
           />
         </div>
       </div>
 
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400 backdrop-blur-md flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
           {error}
         </div>
       )}
 
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-4">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="group relative inline-flex items-center justify-center rounded-xl bg-blue-600 px-8 py-3 text-sm font-semibold text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden w-full sm:w-auto"
         >
-          {isSubmitting ? "Saving..." : initialData ? "Update Device" : "Create Device"}
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              Saving...
+            </span>
+          ) : (
+            <span className="relative z-10">{initialData ? "Update Device" : "Create Device"}</span>
+          )}
         </button>
       </div>
     </form>
