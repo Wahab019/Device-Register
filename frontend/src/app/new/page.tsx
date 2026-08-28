@@ -3,21 +3,25 @@ import DeviceForm from "../../components/DeviceForm";
 
 export default function NewDevicePage() {
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl">
+    <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl relative z-10">
         <Link
           href="/"
-          className="mb-4 inline-flex items-center text-sm font-medium text-slate-600 transition hover:text-slate-900"
+          className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
         >
-          ← Back to records
+          <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span> Back to records
         </Link>
 
-        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
-          <h1 className="mb-6 text-2xl font-semibold text-slate-900">
+        <div className="glass-panel p-8 sm:p-10 relative">
+          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
+          
+          <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-sm">
             Add New Device Record
           </h1>
 
-          <DeviceForm />
+          <div className="relative z-10">
+            <DeviceForm />
+          </div>
         </div>
       </div>
     </main>

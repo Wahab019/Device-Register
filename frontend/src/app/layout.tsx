@@ -23,7 +23,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col relative overflow-x-hidden">
+        {/* Animated Background Blobs */}
+        <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[120px] animate-float" style={{ animationDelay: '0s' }}></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/20 blur-[120px] animate-float" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-cyan-600/10 blur-[100px] animate-float" style={{ animationDelay: '1.5s' }}></div>
+        </div>
+        
+        {/* Main Content Area */}
+        <div className="flex-1 relative z-10 flex flex-col">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
