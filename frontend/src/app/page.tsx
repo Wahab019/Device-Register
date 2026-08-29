@@ -35,7 +35,7 @@ export default function HomePage() {
         {/* Header Section */}
         <div className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-sm">
+            <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 drop-shadow-sm">
               Device Records
             </h1>
             <p className="mt-2 text-sm text-slate-400">Manage and track customer device repair status.</p>
@@ -45,7 +45,7 @@ export default function HomePage() {
             href="/new"
             className="group relative inline-flex items-center justify-center rounded-xl bg-slate-800/80 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:bg-slate-700 hover:shadow-blue-500/25 border border-slate-700 hover:border-blue-500/50 overflow-hidden"
           >
-            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-0 w-full h-full bg-linear-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <span className="relative z-10 flex items-center gap-2">
               <span className="text-blue-400 text-lg leading-none">+</span> Add New Record
             </span>
