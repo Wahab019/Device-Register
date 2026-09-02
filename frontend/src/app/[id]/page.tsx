@@ -115,7 +115,7 @@ export default function DeviceDetailPage() {
 
           <div className="glass-panel p-8 sm:p-10 relative">
             <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
-            <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-sm">
+            <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 drop-shadow-sm">
               Edit Device Record
             </h1>
             <div className="relative z-10">
@@ -235,7 +235,7 @@ export default function DeviceDetailPage() {
                   </div>
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Email</div>
-                    <div className="mt-1.5 text-slate-200 font-medium break-words">{record.customer_email ?? "—"}</div>
+                    <div className="mt-1.5 text-slate-200 font-medium wrap-break-word">{record.customer_email ?? "—"}</div>
                   </div>
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Status</div>

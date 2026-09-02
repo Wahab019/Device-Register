@@ -15,7 +15,7 @@ export default function NewDevicePage() {
         <div className="glass-panel p-8 sm:p-10 relative">
           <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
           
-          <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-sm">
+          <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 drop-shadow-sm">
             Add New Device Record
           </h1>
 
