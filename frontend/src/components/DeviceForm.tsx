@@ -10,6 +10,8 @@ type DeviceFormProps = {
   onSuccess?: () => void;
 };
 
+// Builds the initial values used when creating a device form, including a
+// default pending status and the current date as the date received.
 const getDefaultFormData = (): DeviceFormData => ({
   customer_name: "",
   customer_phone: "",
@@ -24,6 +26,8 @@ const getDefaultFormData = (): DeviceFormData => ({
   notes: "",
 });
 
+// Renders the device creation or editing form and coordinates its local state,
+// API submission, success navigation, and display of submission errors.
 export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<DeviceFormData>(getDefaultFormData());
@@ -51,6 +55,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
     });
   }, [initialData]);
 
+  // Updates one field in the form while preserving all other field values.
   const updateField = (
     field: keyof DeviceFormData,
     value: string | "pending" | "in_progress" | "completed" | "picked_up",
@@ -58,6 +63,8 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
     setFormData((prev) => ({ ...prev, [field]: value } as DeviceFormData));
   };
 
+  // Validates the submit event, prepares optional values, saves the device,
+  // and then either calls the success callback or navigates back to the list.
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
