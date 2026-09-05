@@ -27,6 +27,8 @@ const statusStyles: Record<
   },
 };
 
+// Combines the device type, brand, and model into a readable table label,
+// omitting missing optional values and providing a fallback when necessary.
 function formatDeviceName(device: DeviceRecord) {
   const parts = [device.device_type];
 
@@ -41,6 +43,8 @@ function formatDeviceName(device: DeviceRecord) {
   return parts.join(" - ") || "Unknown device";
 }
 
+// Renders the device list as a responsive table, including an empty state,
+// status labels, received dates, and links to each device's detail page.
 export default function DeviceTable({ devices }: DeviceTableProps) {
   if (devices.length === 0) {
     return (
@@ -69,6 +73,7 @@ export default function DeviceTable({ devices }: DeviceTableProps) {
           </tr>
         </thead>
         <tbody className="divide-y divide-white/5">
+          {/* Render one table row with the device details and its view link. */}
           {devices.map((device) => {
             const status = statusStyles[device.status];
 
