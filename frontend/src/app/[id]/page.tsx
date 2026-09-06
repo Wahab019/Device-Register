@@ -29,6 +29,8 @@ const statusStyles: Record<
   },
 };
 
+// Loads the requested device record, updates the page state, and reports
+// missing IDs or API failures so the appropriate UI state can be displayed.
 export default function DeviceDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -41,6 +43,8 @@ export default function DeviceDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Fetches the current device details and manages loading and error states
+  // while the request is in progress.
   const fetchRecord = async () => {
     if (!id) {
       setError("Missing device id.");
@@ -61,6 +65,7 @@ export default function DeviceDetailPage() {
     }
   };
 
+  // Reloads the record whenever the route ID changes.
   useEffect(() => {
     fetchRecord();
   }, [id]);
@@ -119,6 +124,7 @@ export default function DeviceDetailPage() {
               Edit Device Record
             </h1>
             <div className="relative z-10">
+              {/* Exit edit mode and refresh the displayed record after saving. */}
               <DeviceForm
                 initialData={record}
                 onSuccess={async () => {
@@ -196,6 +202,7 @@ export default function DeviceDetailPage() {
                       Cancel
                     </button>
 
+                    {/* Delete the record, redirect on success, and show any API error. */}
                     <button
                       type="button"
                       onClick={async () => {
