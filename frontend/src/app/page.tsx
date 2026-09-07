@@ -6,11 +6,14 @@ import DeviceTable from "../components/DeviceTable";
 import { getDevices } from "../lib/api";
 import type { DeviceRecord } from "../lib/types";
 
+// Displays the main device dashboard and loads the current list of records.
 export default function HomePage() {
   const [devices, setDevices] = useState<DeviceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetches the device list once on mount and updates loading/error state
+  // based on the outcome of the API request.
   useEffect(() => {
     async function fetchDevices() {
       try {
