@@ -11,6 +11,19 @@ export default function HomePage() {
   const [devices, setDevices] = useState<DeviceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredDevices = devices.filter(device => {
+    const matchesSearch = 
+      device.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      device.customer_phone.includes(searchQuery) ||
+      (device.serial_number && device.serial_number.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesStatus = statusFilter === "all" || device.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   // Fetches the device list once on mount and updates loading/error state
   // based on the outcome of the API request.
@@ -55,6 +68,28 @@ export default function HomePage() {
           </Link>
         </div>
 
+        {/* Search and Filter Section */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+          <input
+            type="text"
+            placeholder="Search by name, phone, or serial..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 rounded-xl glass-input px-4 py-3 text-sm"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full sm:w-48 rounded-xl glass-input px-4 py-3 text-sm appearance-none bg-slate-800"
+          >
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="picked_up">Picked Up</option>
+          </select>
+        </div>
+
         {/* Content Area */}
         <div className="glass-panel p-1 border border-white/5 shadow-2xl relative">
           {/* Subtle inner glow */}
@@ -76,7 +111,7 @@ export default function HomePage() {
             </div>
           )}
 
-          {!loading && !error && <DeviceTable devices={devices} />}
+          {!loading && !error && <DeviceTable devices={filteredDevices} />}
         </div>
       </div>
     </main>
