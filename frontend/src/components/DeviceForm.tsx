@@ -10,6 +10,17 @@ type DeviceFormProps = {
   onSuccess?: () => void;
 };
 
+const formatPhoneNumber = (value: string) => {
+  if (!value) return value;
+  const phoneNumber = value.replace(/[^\d]/g, "");
+  const phoneNumberLength = phoneNumber.length;
+  if (phoneNumberLength < 4) return phoneNumber;
+  if (phoneNumberLength < 7) {
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+  }
+  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+};
+
 // Builds the initial values used when creating a device form, including a
 // default pending status and the current date as the date received.
 const getDefaultFormData = (): DeviceFormData => ({
@@ -128,8 +139,13 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             id="customer_phone"
             type="text"
             value={formData.customer_phone}
-            onChange={(event) => updateField("customer_phone", event.target.value)}
+            onChange={(event) => {
+              const formatted = formatPhoneNumber(event.target.value);
+              updateField("customer_phone", formatted);
+            }}
             required
+            pattern="^\(\d{3}\)\s\d{3}-\d{4}$"
+            title="Phone number must be in the format (555) 123-4567"
             className="w-full rounded-xl glass-input px-4 py-3 text-sm"
             placeholder="(555) 123-4567"
           />
