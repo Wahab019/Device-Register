@@ -25,6 +25,10 @@ export default function HomePage() {
     return matchesSearch && matchesStatus;
   });
 
+  const handleStatusChange = (id: string, newStatus: string) => {
+    setDevices(devices.map(d => d.id === id ? { ...d, status: newStatus as any } : d));
+  };
+
   // Fetches the device list once on mount and updates loading/error state
   // based on the outcome of the API request.
   useEffect(() => {
@@ -111,7 +115,7 @@ export default function HomePage() {
             </div>
           )}
 
-          {!loading && !error && <DeviceTable devices={filteredDevices} />}
+          {!loading && !error && <DeviceTable devices={filteredDevices} onStatusChange={handleStatusChange} />}
         </div>
       </div>
     </main>
