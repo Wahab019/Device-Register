@@ -13,13 +13,19 @@ type DeviceFormProps = {
 
 const formatPhoneNumber = (value: string) => {
   if (!value) return value;
+  const isPlus = value.startsWith("+");
   const phoneNumber = value.replace(/[^\d]/g, "");
-  const phoneNumberLength = phoneNumber.length;
-  if (phoneNumberLength < 4) return phoneNumber;
-  if (phoneNumberLength < 7) {
-    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+  
+  if (isPlus) {
+    if (phoneNumber.length <= 3) return `+${phoneNumber}`;
+    if (phoneNumber.length <= 6) return `+${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3)}`;
+    if (phoneNumber.length <= 9) return `+${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3, 6)} ${phoneNumber.slice(6)}`;
+    return `+${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3, 6)} ${phoneNumber.slice(6, 9)} ${phoneNumber.slice(9, 13)}`;
+  } else {
+    if (phoneNumber.length <= 4) return phoneNumber;
+    if (phoneNumber.length <= 7) return `${phoneNumber.slice(0, 4)} ${phoneNumber.slice(4)}`;
+    return `${phoneNumber.slice(0, 4)} ${phoneNumber.slice(4, 7)} ${phoneNumber.slice(7, 11)}`;
   }
-  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
 };
 
 // Builds the initial values used when creating a device form, including a
@@ -145,10 +151,10 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
               updateField("customer_phone", formatted);
             }}
             required
-            pattern="^\(\d{3}\)\s\d{3}-\d{4}$"
-            title="Phone number must be in the format (555) 123-4567"
+            pattern="^(\+234\s\d{3}\s\d{3}\s\d{4}|0\d{3}\s\d{3}\s\d{4})$"
+            title="Phone number must be a valid Nigerian format (e.g. 0803 123 4567 or +234 803 123 4567)"
             className="w-full rounded-xl glass-input px-4 py-3 text-sm"
-            placeholder="(555) 123-4567"
+            placeholder="0803 123 4567"
           />
         </div>
 
