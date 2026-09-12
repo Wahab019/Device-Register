@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { createDevice, updateDevice } from "../lib/api";
 import type { DeviceFormData, DeviceRecord } from "../lib/types";
 
@@ -12,13 +13,19 @@ type DeviceFormProps = {
 
 const formatPhoneNumber = (value: string) => {
   if (!value) return value;
+  const isPlus = value.startsWith("+");
   const phoneNumber = value.replace(/[^\d]/g, "");
-  const phoneNumberLength = phoneNumber.length;
-  if (phoneNumberLength < 4) return phoneNumber;
-  if (phoneNumberLength < 7) {
-    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+  
+  if (isPlus) {
+    if (phoneNumber.length <= 3) return `+${phoneNumber}`;
+    if (phoneNumber.length <= 6) return `+${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3)}`;
+    if (phoneNumber.length <= 9) return `+${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3, 6)} ${phoneNumber.slice(6)}`;
+    return `+${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3, 6)} ${phoneNumber.slice(6, 9)} ${phoneNumber.slice(9, 13)}`;
+  } else {
+    if (phoneNumber.length <= 4) return phoneNumber;
+    if (phoneNumber.length <= 7) return `${phoneNumber.slice(0, 4)} ${phoneNumber.slice(4)}`;
+    return `${phoneNumber.slice(0, 4)} ${phoneNumber.slice(4, 7)} ${phoneNumber.slice(7, 11)}`;
   }
-  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
 };
 
 // Builds the initial values used when creating a device form, including a
@@ -43,7 +50,6 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
   const router = useRouter();
   const [formData, setFormData] = useState<DeviceFormData>(getDefaultFormData());
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!initialData) {
@@ -78,7 +84,6 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
   // and then either calls the success callback or navigates back to the list.
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
     setIsSubmitting(true);
 
     try {
@@ -95,8 +100,10 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
 
       if (initialData) {
         await updateDevice(initialData.id, payload);
+        toast.success("Device updated successfully!");
       } else {
         await createDevice(payload);
+        toast.success("Device created successfully!");
       }
 
       if (onSuccess) {
@@ -107,7 +114,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
       router.push("/");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong.";
-      setError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -144,10 +151,10 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
               updateField("customer_phone", formatted);
             }}
             required
-            pattern="^\(\d{3}\)\s\d{3}-\d{4}$"
-            title="Phone number must be in the format (555) 123-4567"
+            pattern="^(\+234\s\d{3}\s\d{3}\s\d{4}|0\d{3}\s\d{3}\s\d{4})$"
+            title="Phone number must be a valid Nigerian format (e.g. 0803 123 4567 or +234 803 123 4567)"
             className="w-full rounded-xl glass-input px-4 py-3 text-sm"
-            placeholder="(555) 123-4567"
+            placeholder="0803 123 4567"
           />
         </div>
 
@@ -293,15 +300,6 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
           />
         </div>
       </div>
-
-      {error && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400 backdrop-blur-md flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
-          {error}
-        </div>
-      )}
 
       <div className="flex justify-end pt-4">
         <button

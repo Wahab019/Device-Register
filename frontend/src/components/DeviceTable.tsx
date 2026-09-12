@@ -2,12 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { updateDevice } from "../lib/api";
 import type { DeviceRecord } from "../lib/types";
 
 type DeviceTableProps = {
   devices: DeviceRecord[];
-  onStatusChange?: (id: string, newStatus: string) => void;
 };
 
 const statusStyles: Record<
@@ -53,7 +51,7 @@ type SortDirection = "asc" | "desc";
 
 // Renders the device list as a responsive table, including an empty state,
 // status labels, received dates, and links to each device's detail page.
-export default function DeviceTable({ devices, onStatusChange }: DeviceTableProps) {
+export default function DeviceTable({ devices }: DeviceTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>("date_received");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
@@ -146,43 +144,17 @@ export default function DeviceTable({ devices, onStatusChange }: DeviceTableProp
                 </td>
                 <td className="px-6 py-4 text-slate-400">{device.customer_phone}</td>
                 <td className="px-6 py-4 text-slate-300">{formatDeviceName(device)}</td>
-                <td className="px-6 py-4 relative">
-                  <select
-                    className={`appearance-none cursor-pointer outline-none inline-flex items-center rounded-full px-3 py-1 pr-6 text-xs font-medium border shadow-sm transition-colors ${
-                      device.status === 'pending' ? 'bg-slate-800/80 border-slate-700 text-slate-300 shadow-slate-900/50 hover:bg-slate-700' :
-                      device.status === 'in_progress' ? 'bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20 hover:bg-amber-900/40' :
-                      device.status === 'completed' ? 'bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20 hover:bg-blue-900/40' :
-                      'bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20 hover:bg-emerald-900/40'
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium border shadow-sm ${
+                      device.status === 'pending' ? 'bg-slate-800/80 border-slate-700 text-slate-300 shadow-slate-900/50' :
+                      device.status === 'in_progress' ? 'bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20' :
+                      device.status === 'completed' ? 'bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20' :
+                      'bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20'
                     }`}
-                    value={device.status}
-                    onChange={async (e) => {
-                      const newStatus = e.target.value as any;
-                      const oldStatus = device.status;
-                      if (onStatusChange) {
-                        onStatusChange(device.id, newStatus);
-                      }
-                      try {
-                        await updateDevice(device.id, { ...device, status: newStatus });
-                      } catch (err) {
-                        console.error("Failed to update status", err);
-                        // Revert on failure
-                        if (onStatusChange) {
-                          onStatusChange(device.id, oldStatus);
-                        }
-                      }
-                    }}
                   >
-                    <option value="pending" className="bg-slate-800 text-slate-200">Pending</option>
-                    <option value="in_progress" className="bg-slate-800 text-slate-200">In Progress</option>
-                    <option value="completed" className="bg-slate-800 text-slate-200">Completed</option>
-                    <option value="picked_up" className="bg-slate-800 text-slate-200">Picked Up</option>
-                  </select>
-                  {/* Dropdown arrow overlay for the pill */}
-                  <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </div>
+                    {status.label}
+                  </span>
                 </td>
                 <td className="px-6 py-4 text-slate-400 whitespace-nowrap">
                   {new Date(device.date_received).toLocaleDateString(undefined, {
