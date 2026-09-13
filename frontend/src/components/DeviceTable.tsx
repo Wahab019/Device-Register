@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import type { DeviceRecord } from "../lib/types";
 
 type DeviceTableProps = {
   devices: DeviceRecord[];
+  sortColumn: SortColumn;
+  sortDirection: SortDirection;
+  onSort: (column: SortColumn) => void;
 };
 
 const statusStyles: Record<
@@ -49,33 +51,13 @@ function formatDeviceName(device: DeviceRecord) {
 type SortColumn = "customer_name" | "date_received" | "status";
 type SortDirection = "asc" | "desc";
 
+function formatSortDirection(direction: SortDirection) {
+  return direction === "asc" ? "Asc" : "Desc";
+}
+
 // Renders the device list as a responsive table, including an empty state,
 // status labels, received dates, and links to each device's detail page.
-export default function DeviceTable({ devices }: DeviceTableProps) {
-  const [sortColumn, setSortColumn] = useState<SortColumn>("date_received");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-
-  const handleSort = (column: SortColumn) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortDirection("asc");
-    }
-  };
-
-  const sortedDevices = [...devices].sort((a, b) => {
-    let comparison = 0;
-    if (sortColumn === "customer_name") {
-      comparison = a.customer_name.localeCompare(b.customer_name);
-    } else if (sortColumn === "date_received") {
-      comparison = new Date(a.date_received).getTime() - new Date(b.date_received).getTime();
-    } else if (sortColumn === "status") {
-      comparison = a.status.localeCompare(b.status);
-    }
-    return sortDirection === "asc" ? comparison : -comparison;
-  });
-
+export default function DeviceTable({ devices, sortColumn, sortDirection, onSort }: DeviceTableProps) {
   if (devices.length === 0) {
     return (
       <div className="flex min-h-75 items-center justify-center rounded-xl border border-dashed border-slate-700/50 bg-slate-800/20 px-4 py-8 text-center text-slate-400">
@@ -96,12 +78,12 @@ export default function DeviceTable({ devices }: DeviceTableProps) {
           <tr>
             <th 
               className="px-6 py-4 rounded-tl-xl cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
-              onClick={() => handleSort("customer_name")}
+              onClick={() => onSort("customer_name")}
             >
               <div className="flex items-center gap-1">
                 Customer Name
                 {sortColumn === "customer_name" && (
-                  <span className="text-blue-400">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                  <span className="text-blue-400">{formatSortDirection(sortDirection)}</span>
                 )}
               </div>
             </th>
@@ -109,23 +91,23 @@ export default function DeviceTable({ devices }: DeviceTableProps) {
             <th className="px-6 py-4">Device</th>
             <th 
               className="px-6 py-4 cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
-              onClick={() => handleSort("status")}
+              onClick={() => onSort("status")}
             >
               <div className="flex items-center gap-1">
                 Status
                 {sortColumn === "status" && (
-                  <span className="text-blue-400">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                  <span className="text-blue-400">{formatSortDirection(sortDirection)}</span>
                 )}
               </div>
             </th>
             <th 
               className="px-6 py-4 cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
-              onClick={() => handleSort("date_received")}
+              onClick={() => onSort("date_received")}
             >
               <div className="flex items-center gap-1">
                 Date Received
                 {sortColumn === "date_received" && (
-                  <span className="text-blue-400">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                  <span className="text-blue-400">{formatSortDirection(sortDirection)}</span>
                 )}
               </div>
             </th>
@@ -134,7 +116,7 @@ export default function DeviceTable({ devices }: DeviceTableProps) {
         </thead>
         <tbody className="divide-y divide-white/5">
           {/* Render one table row with the device details and its view link. */}
-          {sortedDevices.map((device) => {
+          {devices.map((device) => {
             const status = statusStyles[device.status];
 
             return (
