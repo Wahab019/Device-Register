@@ -6,44 +6,64 @@ import DeviceTable from "../components/DeviceTable";
 import { getDevices } from "../lib/api";
 import type { DeviceRecord } from "../lib/types";
 
+const PAGE_SIZE = 20;
+type SortColumn = "customer_name" | "date_received" | "status";
+type SortDirection = "asc" | "desc";
+
 // Displays the main device dashboard and loads the current list of records.
 export default function HomePage() {
   const [devices, setDevices] = useState<DeviceRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [totalDevices, setTotalDevices] = useState(0);
+  const [sortColumn, setSortColumn] = useState<SortColumn>("date_received");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
-  const filteredDevices = devices.filter(device => {
-    const matchesSearch = 
-      device.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      device.customer_phone.includes(searchQuery) ||
-      (device.serial_number && device.serial_number.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesStatus = statusFilter === "all" || device.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  });
+  const hasMoreDevices = devices.length < totalDevices;
 
-  // Fetches the device list once on mount and updates loading/error state
-  // based on the outcome of the API request.
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+    setPage(1);
+  };
+
+  // Fetches the requested device page and updates loading/error state based on
+  // the outcome of the API request.
   useEffect(() => {
     async function fetchDevices() {
       try {
-        setLoading(true);
+        setLoading(page === 1);
+        setLoadingMore(page > 1);
         setError(null);
-        const data = await getDevices();
-        setDevices(data);
+        const data = await getDevices({
+          page,
+          pageSize: PAGE_SIZE,
+          search: searchQuery,
+          status: statusFilter as DeviceRecord["status"] | "all",
+          sortBy: sortColumn,
+          sortDirection,
+        });
+        setDevices((currentDevices) => page === 1 ? data.items : [...currentDevices, ...data.items]);
+        setTotalDevices(data.total);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to load devices.";
         setError(message);
       } finally {
         setLoading(false);
+        setLoadingMore(false);
       }
     }
 
     fetchDevices();
-  }, []);
+  }, [page, searchQuery, statusFilter, sortColumn, sortDirection]);
 
   return (
     <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
@@ -74,12 +94,18 @@ export default function HomePage() {
             type="text"
             placeholder="Search by name, phone, or serial..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1);
+            }}
             className="flex-1 rounded-xl glass-input px-4 py-3 text-sm"
           />
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
             className="w-full sm:w-48 rounded-xl glass-input px-4 py-3 text-sm appearance-none bg-slate-800"
           >
             <option value="all">All Statuses</option>
@@ -111,7 +137,33 @@ export default function HomePage() {
             </div>
           )}
 
-          {!loading && !error && <DeviceTable devices={filteredDevices} />}
+          {!loading && !error && (
+            <>
+              <DeviceTable
+                devices={devices}
+                sortColumn={sortColumn}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
+              {devices.length > 0 && (
+                <div className="flex flex-col items-center justify-between gap-3 border-t border-white/5 px-4 py-5 text-sm text-slate-400 sm:flex-row">
+                  <span>
+                    Showing {devices.length} of {totalDevices} records
+                  </span>
+                  {hasMoreDevices && (
+                    <button
+                      type="button"
+                      onClick={() => setPage((currentPage) => currentPage + 1)}
+                      disabled={loadingMore}
+                      className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 px-5 py-2.5 font-semibold text-slate-100 transition-all hover:border-blue-500/50 hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {loadingMore ? "Loading..." : "Load More"}
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </main>
