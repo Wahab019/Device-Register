@@ -47,3 +47,10 @@ class DeviceOut(BaseModel):
     notes: Optional[str]
     created_at: str
     updated_at: str
+
+
+class DeviceListOut(BaseModel):
+    items: list[DeviceOut]
+    total: int
+    page: int
+    page_size: int

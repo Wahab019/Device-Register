@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
+from typing import Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from app.db import supabase
-from app.models import DeviceCreate, DeviceOut, DeviceUpdate
+from app.models import DeviceCreate, DeviceListOut, DeviceOut, DeviceStatus, DeviceUpdate
 
 router = APIRouter()
 
@@ -25,14 +26,51 @@ def create_device(device: DeviceCreate):
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.get("", response_model=list[DeviceOut])
-def list_devices():
+@router.get("", response_model=DeviceListOut)
+def list_devices(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    search: str | None = None,
+    status: DeviceStatus | Literal["all"] = "all",
+    sort_by: Literal["customer_name", "date_received", "status"] = "date_received",
+    sort_direction: Literal["asc", "desc"] = "desc",
+):
     try:
         if supabase is None:
             raise ValueError("Supabase client is not configured")
 
-        result = supabase.table("device_records").select("*").order("created_at", desc=True).execute()
-        return [DeviceOut(**row) for row in result.data]
+        start = (page - 1) * page_size
+        end = start + page_size - 1
+        query = supabase.table("device_records").select("*", count="exact")
+
+        if search:
+            search_term = search.strip()
+            if search_term:
+                query = query.or_(
+                    ",".join(
+                        [
+                            f"customer_name.ilike.%{search_term}%",
+                            f"customer_phone.ilike.%{search_term}%",
+                            f"serial_number.ilike.%{search_term}%",
+                        ]
+                    )
+                )
+
+        if status != "all":
+            query = query.eq("status", status)
+
+        result = (
+            query.order(sort_by, desc=sort_direction == "desc")
+            .range(start, end)
+            .execute()
+        )
+
+        return DeviceListOut(
+            items=[DeviceOut(**row) for row in result.data],
+            total=result.count or 0,
+            page=page,
+            page_size=page_size,
+        )
     except HTTPException:
         raise
     except Exception as e:

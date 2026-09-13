@@ -1,4 +1,4 @@
-import type { DeviceFormData, DeviceRecord } from "./types";
+import type { DeviceFormData, DeviceListParams, DeviceListResponse, DeviceRecord } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -13,10 +13,20 @@ async function handleResponse(response: Response) {
   return response;
 }
 
-// Sends a GET request to the devices endpoint and returns every registered
-// device after validating the server response.
-export async function getDevices(): Promise<DeviceRecord[]> {
-  const response = await fetch(`${API_URL}/devices`);
+// Sends a GET request to the devices endpoint and returns one page of records
+// after validating the server response.
+export async function getDevices(params: DeviceListParams = {}): Promise<DeviceListResponse> {
+  const searchParams = new URLSearchParams();
+
+  if (params.page) searchParams.set("page", String(params.page));
+  if (params.pageSize) searchParams.set("page_size", String(params.pageSize));
+  if (params.search) searchParams.set("search", params.search);
+  if (params.status && params.status !== "all") searchParams.set("status", params.status);
+  if (params.sortBy) searchParams.set("sort_by", params.sortBy);
+  if (params.sortDirection) searchParams.set("sort_direction", params.sortDirection);
+
+  const query = searchParams.toString();
+  const response = await fetch(`${API_URL}/devices${query ? `?${query}` : ""}`);
   await handleResponse(response);
   return response.json();
 }

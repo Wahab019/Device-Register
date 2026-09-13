@@ -29,3 +29,19 @@ export type DeviceFormData = {
   date_received?: string;
   notes?: string | null;
 };
+
+export type DeviceListResponse = {
+  items: DeviceRecord[];
+  total: number;
+  page: number;
+  page_size: number;
+};
+
+export type DeviceListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: DeviceRecord["status"] | "all";
+  sortBy?: "customer_name" | "date_received" | "status";
+  sortDirection?: "asc" | "desc";
+};
