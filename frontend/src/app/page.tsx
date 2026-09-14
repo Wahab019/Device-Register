@@ -10,6 +10,62 @@ const PAGE_SIZE = 20;
 type SortColumn = "customer_name" | "date_received" | "status";
 type SortDirection = "asc" | "desc";
 
+function SkeletonBar({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`skeleton-shimmer h-4 rounded bg-slate-700/60 ${className}`}
+      aria-hidden="true"
+    />
+  );
+}
+
+function DeviceTableSkeleton() {
+  const rows = Array.from({ length: 8 }, (_, index) => index);
+  const columns = [
+    "w-36",
+    "w-28",
+    "w-44",
+    "w-24 rounded-full",
+    "w-28",
+    "ml-auto h-8 w-8 rounded-full",
+  ];
+
+  return (
+    <div
+      className="overflow-x-auto rounded-xl bg-slate-900/40 backdrop-blur-sm"
+      role="status"
+      aria-label="Loading device records"
+    >
+      <table className="min-w-full text-left text-sm">
+        <thead className="border-b border-white/5 bg-slate-800/50">
+          <tr>
+            {["Customer Name", "Phone", "Device", "Status", "Date Received", "Actions"].map((heading, index) => (
+              <th
+                key={heading}
+                className={`px-6 py-4 ${index === 0 ? "rounded-tl-xl" : ""} ${index === 5 ? "rounded-tr-xl" : ""}`}
+              >
+                <SkeletonBar className={index === 5 ? "ml-auto w-16" : "w-24"} />
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-white/5">
+          {rows.map((row) => (
+            <tr key={row}>
+              {columns.map((width, column) => (
+                <td key={`${row}-${column}`} className="px-6 py-4">
+                  <SkeletonBar className={width} />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <span className="sr-only">Loading records...</span>
+    </div>
+  );
+}
+
 // Displays the main device dashboard and loads the current list of records.
 export default function HomePage() {
   const [devices, setDevices] = useState<DeviceRecord[]>([]);
@@ -121,12 +177,7 @@ export default function HomePage() {
           {/* Subtle inner glow */}
           <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
           
-          {loading && (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-              <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-              <p className="animate-pulse">Loading records...</p>
-            </div>
-          )}
+          {loading && <DeviceTableSkeleton />}
 
           {!loading && error && (
             <div className="m-4 rounded-xl border border-red-500/20 bg-red-500/10 px-6 py-4 text-sm text-red-400 backdrop-blur-md flex items-center gap-3">
