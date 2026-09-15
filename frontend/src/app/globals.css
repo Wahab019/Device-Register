@@ -102,6 +102,100 @@ body {
   }
 }
 
+.print-only {
+  display: none;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+    color: #111827;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  .print-receipt {
+    margin: 0 auto;
+    max-width: 720px;
+    padding: 24px;
+    color: #111827;
+    font-family: Arial, sans-serif;
+  }
+
+  .receipt-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    border-bottom: 2px solid #111827;
+    padding-bottom: 18px;
+  }
+
+  .receipt-header h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .receipt-header p,
+  .receipt-meta p,
+  .receipt-section p {
+    margin: 0;
+  }
+
+  .receipt-meta {
+    max-width: 260px;
+    text-align: right;
+    word-break: break-word;
+  }
+
+  .receipt-meta p,
+  .receipt-status span,
+  .receipt-section dt {
+    color: #4b5563;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .receipt-status {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #d1d5db;
+    padding: 16px 0;
+  }
+
+  .receipt-section {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 18px 0;
+  }
+
+  .receipt-section h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+  }
+
+  .receipt-section dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 28px;
+    margin: 0;
+  }
+
+  .receipt-section dd {
+    margin: 4px 0 0;
+    font-size: 14px;
+    word-break: break-word;
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

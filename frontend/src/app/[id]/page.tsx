@@ -29,6 +29,16 @@ const statusStyles: Record<
   },
 };
 
+function formatDate(value: string | null) {
+  return value ? new Date(value).toLocaleDateString() : "-";
+}
+
+function formatDeviceName(device: DeviceRecord) {
+  return [device.device_type, device.device_brand, device.device_model]
+    .filter(Boolean)
+    .join(" ");
+}
+
 // Loads the requested device record, updates the page state, and reports
 // missing IDs or API failures so the appropriate UI state can be displayed.
 export default function DeviceDetailPage() {
@@ -142,7 +152,8 @@ export default function DeviceDetailPage() {
   const status = statusStyles[record.status];
 
   return (
-    <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
+    <>
+    <main className="screen-only min-h-screen px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl relative z-10">
         <Link
           href="/"
@@ -166,6 +177,15 @@ export default function DeviceDetailPage() {
               </div>
 
               <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  disabled={isDeleting}
+                  className="inline-flex items-center justify-center rounded-xl bg-blue-900/30 border border-blue-700/50 px-5 py-2.5 text-sm font-semibold text-blue-300 transition-all hover:bg-blue-900/50 hover:text-blue-200 hover:border-blue-600 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm"
+                >
+                  Print Receipt
+                </button>
+
                 <button
                   type="button"
                   onClick={() => setIsEditing(true)}
@@ -312,5 +332,73 @@ export default function DeviceDetailPage() {
         </div>
       </div>
     </main>
+    <section className="print-only print-receipt">
+      <header className="receipt-header">
+        <div>
+          <h1>Repair Receipt</h1>
+          <p>Device Register</p>
+        </div>
+        <div className="receipt-meta">
+          <p>Record ID</p>
+          <strong>{record.id}</strong>
+        </div>
+      </header>
+
+      <div className="receipt-status">
+        <span>Status</span>
+        <strong>{status.label}</strong>
+      </div>
+
+      <section className="receipt-section">
+        <h2>Customer</h2>
+        <dl>
+          <div>
+            <dt>Name</dt>
+            <dd>{record.customer_name}</dd>
+          </div>
+          <div>
+            <dt>Phone</dt>
+            <dd>{record.customer_phone}</dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd>{record.customer_email ?? "-"}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section className="receipt-section">
+        <h2>Device</h2>
+        <dl>
+          <div>
+            <dt>Device</dt>
+            <dd>{formatDeviceName(record)}</dd>
+          </div>
+          <div>
+            <dt>Serial Number</dt>
+            <dd>{record.serial_number ?? "-"}</dd>
+          </div>
+          <div>
+            <dt>Date Received</dt>
+            <dd>{formatDate(record.date_received)}</dd>
+          </div>
+          <div>
+            <dt>Date Completed</dt>
+            <dd>{formatDate(record.date_completed)}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section className="receipt-section">
+        <h2>Reported Issue</h2>
+        <p>{record.issue_description}</p>
+      </section>
+
+      <section className="receipt-section">
+        <h2>Notes</h2>
+        <p>{record.notes || "No notes provided."}</p>
+      </section>
+    </section>
+    </>
   );
 }
