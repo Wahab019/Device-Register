@@ -10,6 +10,60 @@ const PAGE_SIZE = 20;
 type SortColumn = "customer_name" | "date_received" | "status";
 type SortDirection = "asc" | "desc";
 
+const statusLabels: Record<DeviceRecord["status"], string> = {
+  pending: "Pending",
+  in_progress: "In Progress",
+  completed: "Completed",
+  picked_up: "Picked Up",
+};
+
+function formatDate(value: string | null) {
+  return value ? new Date(value).toLocaleDateString() : "";
+}
+
+function formatDeviceName(device: DeviceRecord) {
+  return [device.device_type, device.device_brand, device.device_model]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function escapeCsvValue(value: string | number | null | undefined) {
+  const text = value == null ? "" : String(value);
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+function buildDevicesCsv(devices: DeviceRecord[]) {
+  const headers = [
+    "Customer Name",
+    "Phone",
+    "Email",
+    "Device",
+    "Serial Number",
+    "Status",
+    "Date Received",
+    "Date Completed",
+    "Issue Description",
+    "Notes",
+  ];
+
+  const rows = devices.map((device) => [
+    device.customer_name,
+    device.customer_phone,
+    device.customer_email,
+    formatDeviceName(device),
+    device.serial_number,
+    statusLabels[device.status],
+    formatDate(device.date_received),
+    formatDate(device.date_completed),
+    device.issue_description,
+    device.notes,
+  ]);
+
+  return [headers, ...rows]
+    .map((row) => row.map(escapeCsvValue).join(","))
+    .join("\r\n");
+}
+
 function SkeletonBar({ className = "" }: { className?: string }) {
   return (
     <div
@@ -81,6 +135,21 @@ export default function HomePage() {
 
   const hasMoreDevices = devices.length < totalDevices;
 
+  const handleExportCsv = () => {
+    const csv = buildDevicesCsv(devices);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const date = new Date().toISOString().slice(0, 10);
+
+    link.href = url;
+    link.download = `device-records-${date}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -133,15 +202,26 @@ export default function HomePage() {
             <p className="mt-2 text-sm text-slate-400">Manage and track customer device repair status.</p>
           </div>
 
-          <Link
-            href="/new"
-            className="group relative inline-flex items-center justify-center rounded-xl bg-slate-800/80 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:bg-slate-700 hover:shadow-blue-500/25 border border-slate-700 hover:border-blue-500/50 overflow-hidden"
-          >
-            <div className="absolute inset-0 w-full h-full bg-linear-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <span className="relative z-10 flex items-center gap-2">
-              <span className="text-blue-400 text-lg leading-none">+</span> Add New Record
-            </span>
-          </Link>
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <button
+              type="button"
+              onClick={handleExportCsv}
+              disabled={loading || devices.length === 0}
+              className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 px-5 py-3 text-sm font-semibold text-slate-100 shadow-lg transition-all hover:border-blue-500/50 hover:bg-slate-700 hover:shadow-blue-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Export CSV
+            </button>
+
+            <Link
+              href="/new"
+              className="group relative inline-flex items-center justify-center rounded-xl bg-slate-800/80 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:bg-slate-700 hover:shadow-blue-500/25 border border-slate-700 hover:border-blue-500/50 overflow-hidden"
+            >
+              <div className="absolute inset-0 w-full h-full bg-linear-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <span className="relative z-10 flex items-center gap-2">
+                <span className="text-blue-400 text-lg leading-none">+</span> Add New Record
+              </span>
+            </Link>
+          </div>
         </div>
 
         {/* Search and Filter Section */}
