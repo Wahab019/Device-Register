@@ -30,10 +30,14 @@ const statusStyles: Record<
 };
 
 function formatDate(value: string | null) {
+  // Receipt output uses a dash for dates that are not applicable yet, making
+  // the printed document understandable without exposing null values.
   return value ? new Date(value).toLocaleDateString() : "-";
 }
 
 function formatDeviceName(device: DeviceRecord) {
+  // The receipt needs one compact device label while still tolerating missing
+  // brand or model data from older records.
   return [device.device_type, device.device_brand, device.device_model]
     .filter(Boolean)
     .join(" ");
@@ -77,10 +81,14 @@ export default function DeviceDetailPage() {
 
   // Reloads the record whenever the route ID changes.
   useEffect(() => {
+    // Route parameters can change without remounting this client component, so
+    // the effect must refetch whenever the ID changes.
     fetchRecord();
   }, [id]);
 
   if (loading) {
+    // Keep the page structure stable during the request and avoid showing stale
+    // details from a previous route while the new record is being fetched.
     return (
       <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl glass-panel p-10 flex flex-col items-center justify-center text-slate-400">
@@ -92,6 +100,8 @@ export default function DeviceDetailPage() {
   }
 
   if (error) {
+    // The error branch includes navigation back to the list because a failed
+    // detail request leaves the user without a usable record context.
     return (
       <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl relative z-10">
@@ -114,10 +124,15 @@ export default function DeviceDetailPage() {
   }
 
   if (!record) {
+    // This guard protects the render below from an impossible intermediate
+    // state if loading finishes without a record or an error message.
     return null;
   }
 
   if (isEditing) {
+    // Editing replaces the read-only view with the shared form. Its callback
+    // exits edit mode only after the API save has completed and then refreshes
+    // the displayed record.
     return (
       <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl relative z-10">
@@ -207,6 +222,8 @@ export default function DeviceDetailPage() {
             </div>
 
             {showDeleteConfirm && (
+              // Keep deletion as a two-step action because it permanently
+              // removes the record and cannot be recovered from this screen.
               <div className="mb-10 rounded-xl border border-red-500/20 bg-red-950/40 p-6 backdrop-blur-md relative overflow-hidden">
                 <div className="absolute inset-0 bg-red-500/5 pointer-events-none animate-pulse"></div>
                 <div className="relative z-10">
