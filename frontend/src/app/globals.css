@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  /* Shared tokens keep the glass surfaces, page background, and text contrast
+     consistent across pages without repeating raw color values. */
   --background: #0f172a; /* Slate 900 */
   --foreground: #f8fafc; /* Slate 50 */
   
@@ -18,6 +20,8 @@
 }
 
 body {
+  /* Fixed radial lights add depth to the dashboard while the base color still
+     provides a predictable backdrop for dense tables and forms. */
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -27,7 +31,8 @@ body {
   background-attachment: fixed;
 }
 
-/* Glassmorphism Utilities */
+/* Glassmorphism utilities centralize blur, border, and shadow behavior used by
+  panels and inputs throughout the application. */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
@@ -59,7 +64,8 @@ body {
   background: rgba(15, 23, 42, 0.8);
 }
 
-/* Animations */
+/* Motion is limited to ambient background movement and loading feedback so it
+  does not compete with data entry or table scanning. */
 @keyframes float {
   0% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -97,6 +103,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Loading remains visible without animation for users who request less
+     motion from the operating system. */
   .skeleton-shimmer {
     animation: none;
   }
@@ -107,6 +115,8 @@ body {
 }
 
 @media print {
+  /* The on-screen glass dashboard is replaced with a high-contrast receipt so
+     browser printing produces a practical paper handoff for the customer. */
   body {
     background: #ffffff;
     color: #111827;
@@ -196,7 +206,7 @@ body {
   }
 }
 
-/* Custom Scrollbar */
+/* Keep the scrollbar visually aligned with the dark application surfaces. */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
