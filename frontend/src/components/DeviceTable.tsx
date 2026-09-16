@@ -32,6 +32,9 @@ const statusStyles: Record<
   },
 };
 
+// The table owns the status presentation so every row uses the same label and
+// color mapping even when the backend value is rendered in several places.
+
 // Combines the device type, brand, and model into a readable table label,
 // omitting missing optional values and providing a fallback when necessary.
 function formatDeviceName(device: DeviceRecord) {
@@ -52,12 +55,16 @@ type SortColumn = "customer_name" | "date_received" | "status";
 type SortDirection = "asc" | "desc";
 
 function formatSortDirection(direction: SortDirection) {
+  // Keep the direction indicator short because it sits beside the column
+  // heading and is informational rather than an additional control.
   return direction === "asc" ? "Asc" : "Desc";
 }
 
 // Renders the device list as a responsive table, including an empty state,
 // status labels, received dates, and links to each device's detail page.
 export default function DeviceTable({ devices, sortColumn, sortDirection, onSort }: DeviceTableProps) {
+  // An empty result is a valid state after filtering, so render a useful
+  // message instead of an empty table with no explanation.
   if (devices.length === 0) {
     return (
       <div className="flex min-h-75 items-center justify-center rounded-xl border border-dashed border-slate-700/50 bg-slate-800/20 px-4 py-8 text-center text-slate-400">
@@ -76,6 +83,8 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
       <table className="min-w-full text-left text-sm text-slate-300">
         <thead className="bg-slate-800/50 text-slate-400 border-b border-white/5 uppercase tracking-wider text-xs font-semibold">
           <tr>
+            {/* Sortable headings report the selected column and delegate the
+              actual ordering state to the dashboard that owns the query. */}
             <th 
               className="px-6 py-4 rounded-tl-xl cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
               onClick={() => onSort("customer_name")}

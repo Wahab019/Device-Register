@@ -11,6 +11,9 @@ type DeviceFormProps = {
   onSuccess?: () => void;
 };
 
+// Formats the two phone-number shapes accepted by the form while the user
+// types. Non-digit characters are removed first so repeated edits cannot
+// accumulate inconsistent spacing.
 const formatPhoneNumber = (value: string) => {
   if (!value) return value;
   const isPlus = value.startsWith("+");
@@ -52,6 +55,8 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    // Editing loads the server record into the controlled inputs; creating a
+    // record resets to a fresh form whenever the parent clears its input.
     if (!initialData) {
       setFormData(getDefaultFormData());
       return;
@@ -87,6 +92,8 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
     setIsSubmitting(true);
 
     try {
+      // Keep the controlled form pleasant to edit by storing empty strings,
+      // then convert optional blanks to null for a consistent API payload.
       const payload: DeviceFormData = {
         ...formData,
         customer_email: formData.customer_email?.trim() ? formData.customer_email : null,
@@ -98,6 +105,8 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         date_received: formData.date_received || new Date().toISOString().slice(0, 10),
       };
 
+      // The same form serves both create and edit flows. The presence of an
+      // initial record is the single source of truth for choosing the method.
       if (initialData) {
         await updateDevice(initialData.id, payload);
         toast.success("Device updated successfully!");
@@ -147,6 +156,8 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             type="text"
             value={formData.customer_phone}
             onChange={(event) => {
+              // Format only this field at the boundary so the rest of the form
+              // state remains ordinary strings and the API gets readable data.
               const formatted = formatPhoneNumber(event.target.value);
               updateField("customer_phone", formatted);
             }}
@@ -243,6 +254,8 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
           />
         </div>
 
+        {/* Status is editable only for existing records; new records always
+          start pending and receive that default in getDefaultFormData. */}
         {initialData && (
           <div className="space-y-2 md:col-span-1">
             <label htmlFor="status" className="block text-sm font-medium text-slate-300">
@@ -308,7 +321,9 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
           className="group relative inline-flex items-center justify-center rounded-xl bg-blue-600 px-8 py-3 text-sm font-semibold text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden w-full sm:w-auto"
         >
           <div className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
-          {isSubmitting ? (
+            {/* Keep the submit control stable while the request is in flight and
+              make the current operation clear without allowing duplicate saves. */}
+            {isSubmitting ? (
             <span className="flex items-center gap-2">
               <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
               Saving...

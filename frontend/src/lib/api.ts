@@ -2,6 +2,8 @@ import type { DeviceFormData, DeviceListParams, DeviceListResponse, DeviceRecord
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// Keep response validation in one place so every endpoint exposes the same
+// error shape to the UI instead of silently accepting non-2xx responses.
 // Checks whether an API response succeeded. For failed requests, it reads the
 // server's error message and throws an error containing the status and details.
 async function handleResponse(response: Response) {
@@ -16,6 +18,8 @@ async function handleResponse(response: Response) {
 // Sends a GET request to the devices endpoint and returns one page of records
 // after validating the server response.
 export async function getDevices(params: DeviceListParams = {}): Promise<DeviceListResponse> {
+  // Build the query with URLSearchParams so values are encoded correctly and
+  // the backend receives only filters that the caller intentionally supplied.
   const searchParams = new URLSearchParams();
 
   if (params.page) searchParams.set("page", String(params.page));
@@ -42,6 +46,8 @@ export async function getDevice(id: string): Promise<DeviceRecord> {
 // Sends the form data as a JSON POST request to create a new device. The
 // newly created device record is returned after the response is validated.
 export async function createDevice(data: DeviceFormData): Promise<DeviceRecord> {
+  // The form sends optional empty values as null, matching the API model's
+  // distinction between an omitted detail and a meaningful string value.
   const response = await fetch(`${API_URL}/devices`, {
     method: "POST",
     headers: {
