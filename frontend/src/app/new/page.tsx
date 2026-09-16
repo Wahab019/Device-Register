@@ -2,6 +2,8 @@ import Link from "next/link";
 import DeviceForm from "../../components/DeviceForm";
 
 export default function NewDevicePage() {
+  // This route is intentionally a thin shell around the shared form so create
+  // and edit validation, formatting, and submission behavior stay identical.
   return (
     <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl relative z-10">
