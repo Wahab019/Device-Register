@@ -18,21 +18,29 @@ const statusLabels: Record<DeviceRecord["status"], string> = {
 };
 
 function formatDate(value: string | null) {
+  // Exported dates should be readable to staff and should remain blank when
+  // the workflow has not reached that milestone yet.
   return value ? new Date(value).toLocaleDateString() : "";
 }
 
 function formatDeviceName(device: DeviceRecord) {
+  // Optional brand/model fields are omitted so exports never contain doubled
+  // spaces or placeholder text for information the customer did not provide.
   return [device.device_type, device.device_brand, device.device_model]
     .filter(Boolean)
     .join(" ");
 }
 
 function escapeCsvValue(value: string | number | null | undefined) {
+  // Quote every cell and double embedded quotes, covering commas, line breaks,
+  // and customer-entered punctuation without corrupting the CSV structure.
   const text = value == null ? "" : String(value);
   return `"${text.replace(/"/g, '""')}"`;
 }
 
 function buildDevicesCsv(devices: DeviceRecord[]) {
+  // Keep the export column order explicit so downloaded files remain stable
+  // for staff workflows and spreadsheet imports.
   const headers = [
     "Customer Name",
     "Phone",
@@ -74,6 +82,8 @@ function SkeletonBar({ className = "" }: { className?: string }) {
 }
 
 function DeviceTableSkeleton() {
+  // Use fixed placeholder widths to approximate the final table and prevent
+  // the surrounding layout from shifting while the first page is loading.
   const rows = Array.from({ length: 8 }, (_, index) => index);
   const columns = [
     "w-36",
@@ -136,6 +146,8 @@ export default function HomePage() {
   const hasMoreDevices = devices.length < totalDevices;
 
   const handleExportCsv = () => {
+    // Browser downloads are created locally, so exporting does not require a
+    // second API request and works with exactly the records currently loaded.
     const csv = buildDevicesCsv(devices);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -151,6 +163,8 @@ export default function HomePage() {
   };
 
   const handleSort = (column: SortColumn) => {
+    // Repeatedly choosing a column toggles its direction; selecting a new
+    // column starts with ascending order and reloads from the first page.
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -165,6 +179,8 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchDevices() {
       try {
+        // Page one replaces the list after a filter/sort change; later pages
+        // append to it so Load More does not discard already visible records.
         setLoading(page === 1);
         setLoadingMore(page > 1);
         setError(null);
