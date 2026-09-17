@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { toast } from "react-hot-toast";
 import { createDevice, updateDevice } from "../lib/api";
 import type { DeviceFormData, DeviceRecord } from "../lib/types";
@@ -47,35 +47,32 @@ const getDefaultFormData = (): DeviceFormData => ({
   notes: "",
 });
 
+const getInitialFormData = (initialData?: DeviceRecord): DeviceFormData => {
+  if (!initialData) {
+    return getDefaultFormData();
+  }
+
+  return {
+    customer_name: initialData.customer_name,
+    customer_phone: initialData.customer_phone,
+    customer_email: initialData.customer_email ?? "",
+    device_type: initialData.device_type,
+    device_brand: initialData.device_brand ?? "",
+    device_model: initialData.device_model ?? "",
+    serial_number: initialData.serial_number ?? "",
+    issue_description: initialData.issue_description,
+    status: initialData.status,
+    date_received: initialData.date_received,
+    notes: initialData.notes ?? "",
+  };
+};
+
 // Renders the device creation or editing form and coordinates its local state,
 // API submission, success navigation, and display of submission errors.
 export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) {
   const router = useRouter();
-  const [formData, setFormData] = useState<DeviceFormData>(getDefaultFormData());
+  const [formData, setFormData] = useState<DeviceFormData>(() => getInitialFormData(initialData));
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    // Editing loads the server record into the controlled inputs; creating a
-    // record resets to a fresh form whenever the parent clears its input.
-    if (!initialData) {
-      setFormData(getDefaultFormData());
-      return;
-    }
-
-    setFormData({
-      customer_name: initialData.customer_name,
-      customer_phone: initialData.customer_phone,
-      customer_email: initialData.customer_email ?? "",
-      device_type: initialData.device_type,
-      device_brand: initialData.device_brand ?? "",
-      device_model: initialData.device_model ?? "",
-      serial_number: initialData.serial_number ?? "",
-      issue_description: initialData.issue_description,
-      status: initialData.status,
-      date_received: initialData.date_received,
-      notes: initialData.notes ?? "",
-    });
-  }, [initialData]);
 
   // Updates one field in the form while preserving all other field values.
   const updateField = (

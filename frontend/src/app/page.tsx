@@ -137,6 +137,7 @@ export default function HomePage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [totalDevices, setTotalDevices] = useState(0);
@@ -144,6 +145,15 @@ export default function HomePage() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const hasMoreDevices = devices.length < totalDevices;
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery.trim());
+      setPage(1);
+    }, 300);
+
+    return () => window.clearTimeout(timeout);
+  }, [searchQuery]);
 
   const handleExportCsv = () => {
     // Browser downloads are created locally, so exporting does not require a
@@ -187,7 +197,7 @@ export default function HomePage() {
         const data = await getDevices({
           page,
           pageSize: PAGE_SIZE,
-          search: searchQuery,
+          search: debouncedSearchQuery,
           status: statusFilter as DeviceRecord["status"] | "all",
           sortBy: sortColumn,
           sortDirection,
@@ -204,7 +214,7 @@ export default function HomePage() {
     }
 
     fetchDevices();
-  }, [page, searchQuery, statusFilter, sortColumn, sortDirection]);
+  }, [page, debouncedSearchQuery, statusFilter, sortColumn, sortDirection]);
 
   return (
     <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
@@ -246,10 +256,7 @@ export default function HomePage() {
             type="text"
             placeholder="Search by name, phone, or serial..."
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 rounded-xl glass-input px-4 py-3 text-sm"
           />
           <select
