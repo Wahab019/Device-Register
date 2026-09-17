@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DeviceForm from "../../components/DeviceForm";
 import { deleteDevice, getDevice } from "../../lib/api";
 import type { DeviceRecord } from "../../lib/types";
@@ -59,7 +59,9 @@ export default function DeviceDetailPage() {
 
   // Fetches the current device details and manages loading and error states
   // while the request is in progress.
-  const fetchRecord = async () => {
+  const fetchRecord = useCallback(async () => {
+    await Promise.resolve();
+
     if (!id) {
       setError("Missing device id.");
       setLoading(false);
@@ -77,14 +79,18 @@ export default function DeviceDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   // Reloads the record whenever the route ID changes.
   useEffect(() => {
     // Route parameters can change without remounting this client component, so
     // the effect must refetch whenever the ID changes.
-    fetchRecord();
-  }, [id]);
+    const timeout = window.setTimeout(() => {
+      fetchRecord();
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, [fetchRecord]);
 
   if (loading) {
     // Keep the page structure stable during the request and avoid showing stale
