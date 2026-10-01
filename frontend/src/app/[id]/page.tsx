@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import DeviceForm from "../../components/DeviceForm";
 import ChargesPanel from "../../components/ChargesPanel";
+import StaffHeader from "../../components/StaffHeader";
+import { useAuth } from "../../lib/auth-context";
 import { deleteDevice, getDevice } from "../../lib/api";
 import type { DeviceRecord } from "../../lib/types";
 
@@ -50,6 +52,7 @@ export default function DeviceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const { user, loading: authLoading } = useAuth();
 
   const [record, setRecord] = useState<DeviceRecord | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +60,12 @@ export default function DeviceDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
 
   // Fetches the current device details and manages loading and error states
   // while the request is in progress.
@@ -93,6 +102,14 @@ export default function DeviceDetailPage() {
     return () => window.clearTimeout(timeout);
   }, [fetchRecord]);
 
+  if (authLoading || !user) {
+    return (
+      <main className="min-h-screen px-4 py-16 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+      </main>
+    );
+  }
+
   if (loading) {
     // Keep the page structure stable during the request and avoid showing stale
     // details from a previous route while the new record is being fetched.
@@ -110,8 +127,9 @@ export default function DeviceDetailPage() {
     // The error branch includes navigation back to the list because a failed
     // detail request leaves the user without a usable record context.
     return (
-      <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl relative z-10">
+      <main className="min-h-screen pb-16">
+        <StaffHeader />
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10">
           <Link
             href="/"
             className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
@@ -141,8 +159,9 @@ export default function DeviceDetailPage() {
     // exits edit mode only after the API save has completed and then refreshes
     // the displayed record.
     return (
-      <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl relative z-10">
+      <main className="min-h-screen pb-16">
+        <StaffHeader />
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10">
           <Link
             href="/"
             className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
@@ -175,7 +194,10 @@ export default function DeviceDetailPage() {
 
   return (
     <>
-    <main className="screen-only min-h-screen px-4 py-12 sm:px-6 lg:px-8">
+    <div className="screen-only">
+      <StaffHeader />
+    </div>
+    <main className="screen-only min-h-screen pb-16 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl relative z-10">
         <Link
           href="/"
