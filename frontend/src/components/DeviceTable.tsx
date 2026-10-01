@@ -22,13 +22,13 @@ const statusStyles: Record<
     label: "In Progress",
     classes: "bg-yellow-100 text-yellow-800",
   },
+  ready_for_pickup: {
+    label: "Ready for Pickup",
+    classes: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
+  },
   completed: {
     label: "Completed",
-    classes: "bg-blue-100 text-blue-800",
-  },
-  picked_up: {
-    label: "Picked Up",
-    classes: "bg-green-100 text-green-800",
+    classes: "bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20",
   },
 };
 
@@ -131,7 +131,20 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
             return (
               <tr key={device.id} className="transition-all duration-200 hover:bg-slate-800/60 group relative z-0">
                 <td className="px-6 py-4 font-medium text-slate-200">
-                  {device.customer_name}
+                  <div>{device.customer_name}</div>
+                  {device.ticket_code && (
+                    <div className="mt-0.5">
+                      <Link
+                        href={`/track/${device.ticket_code}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                        title="View public tracking page"
+                      >
+                        {device.ticket_code}
+                      </Link>
+                    </div>
+                  )}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-slate-400">{device.customer_phone}</td>
                 <td className="px-6 py-4 text-slate-300">{formatDeviceName(device)}</td>
@@ -140,8 +153,8 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
                     className={`inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium border shadow-sm ${
                       device.status === 'pending' ? 'bg-slate-800/80 border-slate-700 text-slate-300 shadow-slate-900/50' :
                       device.status === 'in_progress' ? 'bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20' :
-                      device.status === 'completed' ? 'bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20' :
-                      'bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20'
+                      device.status === 'ready_for_pickup' ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20' :
+                      'bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20'
                     }`}
                   >
                     {status.label}
