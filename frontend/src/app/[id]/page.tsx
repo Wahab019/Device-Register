@@ -19,13 +19,13 @@ const statusStyles: Record<
     label: "In Progress",
     classes: "bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20",
   },
+  ready_for_pickup: {
+    label: "Ready for Pickup",
+    classes: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
+  },
   completed: {
     label: "Completed",
     classes: "bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20",
-  },
-  picked_up: {
-    label: "Picked Up",
-    classes: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
   },
 };
 
@@ -192,9 +192,25 @@ export default function DeviceDetailPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">
                   Device Details
                 </p>
-                <h1 className="text-3xl font-bold text-slate-100 drop-shadow-sm">
-                  {record.customer_name}
-                </h1>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className="text-3xl font-bold text-slate-100 drop-shadow-sm">
+                    {record.customer_name}
+                  </h1>
+                  {record.ticket_code && (
+                    <Link
+                      href={`/track/${record.ticket_code}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-xs font-semibold text-blue-400 bg-blue-950/60 border border-blue-800/60 px-3 py-1 rounded-full hover:bg-blue-900/60 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
+                      title="Open Public Tracking Page"
+                    >
+                      <span>{record.ticket_code}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </Link>
+                  )}
+                </div>
               </div>
 
               <div className="flex items-center gap-3">
@@ -364,6 +380,12 @@ export default function DeviceDetailPage() {
         <div className="receipt-meta">
           <p>Record ID</p>
           <strong>{record.id}</strong>
+          {record.ticket_code && (
+            <>
+              <p style={{ marginTop: '4px' }}>Ticket Code</p>
+              <strong>{record.ticket_code}</strong>
+            </>
+          )}
         </div>
       </header>
 
