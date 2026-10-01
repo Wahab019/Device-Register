@@ -196,3 +196,15 @@ export async function getMe(): Promise<StaffUser> {
   await handleResponse(response);
   return response.json();
 }
+
+export async function resendTrackingEmail(deviceId: string): Promise<{ success: boolean; message: string }> {
+  const response = await fetch(`${API_URL}/devices/${deviceId}/resend-email`, {
+    method: "POST",
+    headers: {
+      ...getStaffHeaders(),
+    },
+  });
+  await handleResponse(response);
+  return response.json();
+}
+
