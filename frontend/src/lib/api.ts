@@ -1,4 +1,5 @@
 import type {
+  AuthResponse,
   Charge,
   ChargeFormData,
   ChargesSummary,
@@ -7,16 +8,23 @@ import type {
   DeviceListResponse,
   DeviceRecord,
   DeviceTrackRecord,
+  StaffUser,
 } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Helper to provide staff authentication headers for internal endpoints
-function getStaffHeaders(): Record<string, string> {
+export function getStaffHeaders(): Record<string, string> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("staff_access_token") : null;
+  if (token) {
+    return {
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  const legacyKey = typeof window !== "undefined" ? localStorage.getItem("staff_api_key") : null;
   const envKey = process.env.NEXT_PUBLIC_STAFF_API_KEY;
-  const localKey =
-    typeof window !== "undefined" ? localStorage.getItem("staff_api_key") : null;
-  const key = localKey || envKey;
+  const key = legacyKey || envKey;
 
   if (key) {
     return {
@@ -159,4 +167,35 @@ export async function deleteCharge(deviceId: string, chargeId: string): Promise<
     },
   });
   await handleResponse(response);
+}
+
+// Staff authentication endpoints
+export async function loginStaff(data: { email: string; password: string }): Promise<AuthResponse> {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  await handleResponse(response);
+  return response.json();
+}
+
+export async function signupStaff(data: { email: string; password: string }): Promise<AuthResponse> {
+  const response = await fetch(`${API_URL}/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  await handleResponse(response);
+  return response.json();
+}
+
+export async function getMe(): Promise<StaffUser> {
+  const response = await fetch(`${API_URL}/auth/me`, {
+    headers: {
+      ...getStaffHeaders(),
+    },
+  });
+  await handleResponse(response);
+  return response.json();
 }
