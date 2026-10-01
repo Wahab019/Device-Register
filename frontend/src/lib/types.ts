@@ -1,8 +1,11 @@
+export type DeviceStatus = "pending" | "in_progress" | "ready_for_pickup" | "completed";
+
 // The complete representation returned by the backend for an existing record.
 // Nullable fields are optional in the database and are rendered with a UI
 // fallback when no value has been recorded.
 export type DeviceRecord = {
   id: string;
+  ticket_code?: string | null;
   customer_name: string;
   customer_phone: string;
   customer_email: string | null;
@@ -11,7 +14,7 @@ export type DeviceRecord = {
   device_model: string | null;
   serial_number: string | null;
   issue_description: string;
-  status: "pending" | "in_progress" | "completed" | "picked_up";
+  status: DeviceStatus;
   date_received: string;
   date_completed: string | null;
   notes: string | null;
@@ -30,7 +33,7 @@ export type DeviceFormData = {
   device_model?: string | null;
   serial_number?: string | null;
   issue_description: string;
-  status?: "pending" | "in_progress" | "completed" | "picked_up";
+  status?: DeviceStatus;
   date_received?: string;
   notes?: string | null;
 };
@@ -53,4 +56,20 @@ export type DeviceListParams = {
   status?: DeviceRecord["status"] | "all";
   sortBy?: "customer_name" | "date_received" | "status";
   sortDirection?: "asc" | "desc";
+};
+
+// Public tracking types
+export type StatusTimelineItem = {
+  new_status: string;
+  changed_at: string;
+};
+
+export type DeviceTrackRecord = {
+  status: DeviceStatus | string;
+  device_type: string;
+  device_brand: string | null;
+  device_model: string | null;
+  date_received: string;
+  date_completed: string | null;
+  status_history: StatusTimelineItem[];
 };
