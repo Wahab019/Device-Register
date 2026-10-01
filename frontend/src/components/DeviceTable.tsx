@@ -80,7 +80,7 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
 
   return (
     <div className="overflow-x-auto rounded-xl bg-slate-900/40 backdrop-blur-sm">
-      <table className="min-w-max text-left text-sm text-slate-300">
+      <table className="w-full min-w-full text-left text-sm text-slate-300">
         <thead className="bg-slate-800/50 text-slate-400 border-b border-white/5 uppercase tracking-wider text-xs font-semibold">
           <tr>
             {/* Sortable headings report the selected column and delegate the
@@ -110,7 +110,7 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
               </div>
             </th>
             <th 
-              className="px-6 py-4 cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
+              className="whitespace-nowrap px-6 py-4 cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
               onClick={() => onSort("date_received")}
             >
               <div className="flex items-center gap-1">
