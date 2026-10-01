@@ -1,8 +1,9 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.auth import verify_staff_key
 from app.routes.devices import router as devices_router
 from app.routes.track import router as track_router
 
@@ -32,5 +33,13 @@ def health_check():
     return {"status": "ok"}
 
 
-app.include_router(devices_router, prefix="/devices", tags=["devices"])
-app.include_router(track_router, prefix="/track", tags=["track"])
+# Internal staff endpoints protected by verify_staff_key
+app.include_router(
+    devices_router,
+    prefix="/devices",
+    tags=["devices"],
+    dependencies=[Depends(verify_staff_key)],
+)
+
+# Public customer tracking endpoint (no auth required)
+app.include_router(track_router, prefix="/track", tags=["track"])
