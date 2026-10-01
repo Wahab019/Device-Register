@@ -10,9 +10,9 @@ type ChargesPanelProps = {
 };
 
 function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-NG", {
     style: "currency",
-    currency: "USD",
+    currency: "NGN",
   }).format(amount);
 }
 
@@ -206,7 +206,7 @@ export default function ChargesPanel({ deviceId }: ChargesPanelProps) {
 
           <div className="w-full sm:w-36 space-y-1.5">
             <label htmlFor="charge_amount" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Amount ($)
+              Amount (₦)
             </label>
             <input
               id="charge_amount"

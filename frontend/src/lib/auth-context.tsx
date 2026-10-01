@@ -9,7 +9,7 @@ type AuthContextType = {
   user: StaffUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, inviteCode: string) => Promise<void>;
   logout: () => void;
 };
 
@@ -46,8 +46,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(res.user);
   };
 
-  const signup = async (email: string, password: string) => {
-    const res = await signupStaff({ email, password });
+  const signup = async (email: string, password: string, inviteCode: string) => {
+    const res = await signupStaff({ email, password, invite_code: inviteCode });
     localStorage.setItem("staff_access_token", res.access_token);
     setUser(res.user);
   };

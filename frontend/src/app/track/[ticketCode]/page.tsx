@@ -36,6 +36,13 @@ function formatStatus(status: string) {
   return statusStyles[status]?.label ?? status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+function formatNaira(amount: number) {
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+  }).format(amount);
+}
+
 export default function TicketTrackingPage() {
   const params = useParams();
   const rawCode = Array.isArray(params.ticketCode) ? params.ticketCode[0] : params.ticketCode;
@@ -250,8 +257,8 @@ export default function TicketTrackingPage() {
                   Repair Charges & Bill
                 </h2>
                 {typeof record.total_charges === "number" && record.total_charges > 0 && (
-                  <span className="text-xs font-medium text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-800/40">
-                    Total: ${record.total_charges.toFixed(2)}
+                  <span className="text-xs font-medium text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-800/40 font-mono">
+                    Total: {formatNaira(record.total_charges)}
                   </span>
                 )}
               </div>
@@ -272,7 +279,7 @@ export default function TicketTrackingPage() {
                           </p>
                         </div>
                         <span className="text-sm font-semibold font-mono text-slate-100">
-                          ${charge.amount.toFixed(2)}
+                          {formatNaira(charge.amount)}
                         </span>
                       </div>
                     ))}
@@ -281,7 +288,7 @@ export default function TicketTrackingPage() {
                   <div className="flex items-center justify-between bg-slate-800/70 px-4 py-3.5 border-t border-white/5">
                     <span className="text-sm font-medium text-slate-300">Total Accumulated Bill</span>
                     <span className="text-lg font-bold font-mono text-emerald-400">
-                      ${(record.total_charges ?? 0).toFixed(2)}
+                      {formatNaira(record.total_charges ?? 0)}
                     </span>
                   </div>
                 </div>

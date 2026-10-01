@@ -116,6 +116,7 @@ class LoginRequest(BaseModel):
 class SignUpRequest(BaseModel):
     email: str
     password: str
+    invite_code: str
 
 
 class UserOut(BaseModel):
