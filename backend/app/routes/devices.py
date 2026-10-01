@@ -19,6 +19,7 @@ from app.models import (
 )
 from app.services.email import (
     send_creation_email_background,
+    send_device_tracking_email,
     send_status_change_email_background,
 )
 
@@ -346,4 +347,18 @@ def delete_charge(device_id: str, charge_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@router.post("/{device_id}/resend-email")
+def resend_tracking_email(device_id: str):
+    try:
+        success, message = send_device_tracking_email(device_id)
+        if not success:
+            raise HTTPException(status_code=400, detail=message)
+        return {"success": True, "message": message}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
 
