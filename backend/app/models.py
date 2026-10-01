@@ -1,8 +1,9 @@
 from typing import Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-DeviceStatus = Literal["pending", "in_progress", "completed", "picked_up"]
+ALLOWED_STATUSES = ("pending", "in_progress", "ready_for_pickup", "completed")
+DeviceStatus = Literal["pending", "in_progress", "ready_for_pickup", "completed"]
 
 
 class DeviceCreate(BaseModel):
@@ -33,18 +34,19 @@ class DeviceUpdate(BaseModel):
 
 class DeviceOut(BaseModel):
     id: str
+    ticket_code: Optional[str] = None
     customer_name: str
     customer_phone: str
-    customer_email: Optional[str]
+    customer_email: Optional[str] = None
     device_type: str
-    device_brand: Optional[str]
-    device_model: Optional[str]
-    serial_number: Optional[str]
+    device_brand: Optional[str] = None
+    device_model: Optional[str] = None
+    serial_number: Optional[str] = None
     issue_description: str
     status: DeviceStatus
     date_received: str
-    date_completed: Optional[str]
-    notes: Optional[str]
+    date_completed: Optional[str] = None
+    notes: Optional[str] = None
     created_at: str
     updated_at: str
 
@@ -54,3 +56,45 @@ class DeviceListOut(BaseModel):
     total: int
     page: int
     page_size: int
+
+
+class StatusHistoryOut(BaseModel):
+    id: str
+    device_id: str
+    old_status: Optional[str] = None
+    new_status: str
+    email_sent: bool = False
+    changed_at: str
+
+
+class StatusTimelineItem(BaseModel):
+    new_status: str
+    changed_at: str
+
+
+class DeviceTrackOut(BaseModel):
+    status: str
+    device_type: str
+    device_brand: Optional[str] = None
+    device_model: Optional[str] = None
+    date_received: str
+    date_completed: Optional[str] = None
+    status_history: list[StatusTimelineItem] = []
+
+
+class ChargeCreate(BaseModel):
+    description: str
+    amount: float = Field(..., ge=0)
+
+
+class ChargeOut(BaseModel):
+    id: str
+    device_id: str
+    description: str
+    amount: float
+    created_at: str
+
+
+class ChargesSummaryOut(BaseModel):
+    items: list[ChargeOut]
+    total: float
