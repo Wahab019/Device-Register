@@ -107,17 +107,20 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
       if (initialData) {
         await updateDevice(initialData.id, payload);
         toast.success("Device updated successfully!");
+        if (onSuccess) {
+          onSuccess();
+          return;
+        }
+        router.push("/");
       } else {
-        await createDevice(payload);
-        toast.success("Device created successfully!");
+        const created = await createDevice(payload);
+        toast.success(`Device registered! Ticket Code: ${created.ticket_code}`, { duration: 5000 });
+        if (onSuccess) {
+          onSuccess();
+          return;
+        }
+        router.push(`/${created.id}`);
       }
-
-      if (onSuccess) {
-        onSuccess();
-        return;
-      }
-
-      router.push("/");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong.";
       toast.error(message);
