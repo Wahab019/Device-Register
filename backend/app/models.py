@@ -72,6 +72,12 @@ class StatusTimelineItem(BaseModel):
     changed_at: str
 
 
+class TrackChargeItem(BaseModel):
+    description: str
+    amount: float
+    created_at: str
+
+
 class DeviceTrackOut(BaseModel):
     status: str
     device_type: str
@@ -80,6 +86,8 @@ class DeviceTrackOut(BaseModel):
     date_received: str
     date_completed: Optional[str] = None
     status_history: list[StatusTimelineItem] = []
+    charges: list[TrackChargeItem] = []
+    total_charges: float = 0.0
 
 
 class ChargeCreate(BaseModel):
@@ -98,3 +106,24 @@ class ChargeOut(BaseModel):
 class ChargesSummaryOut(BaseModel):
     items: list[ChargeOut]
     total: float
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class SignUpRequest(BaseModel):
+    email: str
+    password: str
+
+
+class UserOut(BaseModel):
+    id: str
+    email: str
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserOut
