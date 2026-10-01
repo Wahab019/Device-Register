@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DeviceTable from "../components/DeviceTable";
+import StaffHeader from "../components/StaffHeader";
+import { useAuth } from "../lib/auth-context";
 import { getDevices } from "../lib/api";
 import type { DeviceRecord } from "../lib/types";
 
@@ -132,6 +135,9 @@ function DeviceTableSkeleton() {
 
 // Displays the main device dashboard and loads the current list of records.
 export default function HomePage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
   const [devices, setDevices] = useState<DeviceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -145,6 +151,13 @@ export default function HomePage() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const hasMoreDevices = devices.length < totalDevices;
+
+  // Protect staff route
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -213,12 +226,23 @@ export default function HomePage() {
       }
     }
 
-    fetchDevices();
-  }, [page, debouncedSearchQuery, statusFilter, sortColumn, sortDirection]);
+    if (user) {
+      fetchDevices();
+    }
+  }, [page, debouncedSearchQuery, statusFilter, sortColumn, sortDirection, user]);
+
+  if (authLoading || !user) {
+    return (
+      <main className="min-h-screen px-4 py-16 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+      </main>
+    );
+  }
 
   return (
-    <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen pb-16">
+      <StaffHeader />
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
