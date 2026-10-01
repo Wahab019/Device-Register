@@ -13,8 +13,8 @@ type SortDirection = "asc" | "desc";
 const statusLabels: Record<DeviceRecord["status"], string> = {
   pending: "Pending",
   in_progress: "In Progress",
+  ready_for_pickup: "Ready for Pickup",
   completed: "Completed",
-  picked_up: "Picked Up",
 };
 
 function formatDate(value: string | null) {
@@ -239,6 +239,13 @@ export default function HomePage() {
             </button>
 
             <Link
+              href="/track"
+              className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 px-5 py-3 text-sm font-semibold text-slate-300 shadow-lg transition-all hover:border-blue-500/50 hover:bg-slate-700 hover:text-white"
+            >
+              Public Tracker
+            </Link>
+
+            <Link
               href="/new"
               className="group relative inline-flex items-center justify-center rounded-xl bg-slate-800/80 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:bg-slate-700 hover:shadow-blue-500/25 border border-slate-700 hover:border-blue-500/50 overflow-hidden"
             >
@@ -270,8 +277,8 @@ export default function HomePage() {
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
             <option value="in_progress">In Progress</option>
+            <option value="ready_for_pickup">Ready for Pickup</option>
             <option value="completed">Completed</option>
-            <option value="picked_up">Picked Up</option>
           </select>
         </div>
 
