@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import logging
-from typing import Literal
+from typing import Any, Literal
 import uuid
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-def format_device_name(record: dict) -> str:
+def format_device_name(record: Any) -> str:
     parts = [record.get("device_type"), record.get("device_brand"), record.get("device_model")]
     return " ".join([p for p in parts if p]) or "Device"
 
@@ -92,7 +92,7 @@ def create_device(device: DeviceCreate, background_tasks: BackgroundTasks):
                 device_name,
             )
 
-        return DeviceOut(**record_data)
+        return DeviceOut.model_validate(record_data)
     except HTTPException:
         raise
     except Exception as e:
@@ -139,7 +139,7 @@ def list_devices(
         )
 
         return DeviceListOut(
-            items=[DeviceOut(**row) for row in result.data],
+            items=[DeviceOut.model_validate(row) for row in (result.data or [])],
             total=result.count or 0,
             page=page,
             page_size=page_size,
@@ -160,7 +160,7 @@ def get_device(device_id: str):
         if not result.data:
             raise HTTPException(status_code=404, detail="Device record not found")
 
-        return DeviceOut(**result.data)
+        return DeviceOut.model_validate(result.data)
     except HTTPException:
         raise
     except Exception as e:
@@ -242,7 +242,7 @@ def update_device(device_id: str, device: DeviceUpdate, background_tasks: Backgr
                     new_status,
                 )
 
-        return DeviceOut(**updated_record)
+        return DeviceOut.model_validate(updated_record)
     except HTTPException:
         raise
     except Exception as e:
@@ -284,7 +284,7 @@ def list_charges(device_id: str):
             .order("created_at", desc=False)
             .execute()
         )
-        items = [ChargeOut(**row) for row in (result.data or [])]
+        items = [ChargeOut.model_validate(row) for row in (result.data or [])]
         total = round(sum(item.amount for item in items), 2)
         return ChargesSummaryOut(items=items, total=total)
     except HTTPException:
@@ -318,7 +318,7 @@ def add_charge(device_id: str, charge: ChargeCreate):
         if not result.data:
             raise HTTPException(status_code=500, detail="Failed to add charge")
 
-        return ChargeOut(**result.data[0])
+        return ChargeOut.model_validate(result.data[0])
     except HTTPException:
         raise
     except Exception as e:
