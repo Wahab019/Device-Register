@@ -1,6 +1,8 @@
 import logging
 import os
-from fastapi import APIRouter, Depends, HTTPException
+import secrets
+from typing import Optional
+from fastapi import APIRouter, Depends, Header, HTTPException
 import httpx
 
 from app.auth import verify_staff_key
@@ -67,8 +69,42 @@ def login_staff(credentials: LoginRequest):
 
 
 @router.post("/signup", response_model=AuthResponse)
-def register_staff(credentials: SignUpRequest):
-    """Creates a new employee account using Supabase Auth admin API statelessly."""
+def register_staff(
+    credentials: SignUpRequest,
+    authorization: Optional[str] = Header(None),
+    x_staff_key: Optional[str] = Header(None, alias="x-staff-key"),
+):
+    """Creates a new employee account using Supabase Auth admin API statelessly.
+    Requires a valid staff registration invite code or an active staff session.
+    """
+    expected_code = os.getenv("STAFF_REGISTRATION_KEY") or os.getenv("STAFF_API_KEY")
+    if not expected_code:
+        raise HTTPException(
+            status_code=403,
+            detail="Staff self-registration is disabled. Please contact administrator.",
+        )
+
+    is_authorized = False
+    provided_invite = credentials.invite_code.strip() if credentials.invite_code else ""
+
+    # 1. Check if invite code matches
+    if secrets.compare_digest(provided_invite, expected_code.strip()):
+        is_authorized = True
+
+    # 2. Check if an existing logged-in staff member is creating the account
+    if not is_authorized and (authorization or x_staff_key):
+        try:
+            verify_staff_key(authorization=authorization, x_staff_key=x_staff_key)
+            is_authorized = True
+        except HTTPException:
+            pass
+
+    if not is_authorized:
+        raise HTTPException(
+            status_code=403,
+            detail="Invalid staff invite code. A valid code is required to register.",
+        )
+
     url, service_key = _get_supabase_config()
     email = credentials.email.strip().lower()
     password = credentials.password
