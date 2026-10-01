@@ -1,11 +1,34 @@
-import type { DeviceFormData, DeviceListParams, DeviceListResponse, DeviceRecord } from "./types";
+import type {
+  Charge,
+  ChargeFormData,
+  ChargesSummary,
+  DeviceFormData,
+  DeviceListParams,
+  DeviceListResponse,
+  DeviceRecord,
+  DeviceTrackRecord,
+} from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// Helper to provide staff authentication headers for internal endpoints
+function getStaffHeaders(): Record<string, string> {
+  const envKey = process.env.NEXT_PUBLIC_STAFF_API_KEY;
+  const localKey =
+    typeof window !== "undefined" ? localStorage.getItem("staff_api_key") : null;
+  const key = localKey || envKey;
+
+  if (key) {
+    return {
+      "x-staff-key": key,
+      Authorization: `Bearer ${key}`,
+    };
+  }
+  return {};
+}
+
 // Keep response validation in one place so every endpoint exposes the same
 // error shape to the UI instead of silently accepting non-2xx responses.
-// Checks whether an API response succeeded. For failed requests, it reads the
-// server's error message and throws an error containing the status and details.
 async function handleResponse(response: Response) {
   if (!response.ok) {
     const errorText = await response.text();
@@ -16,10 +39,7 @@ async function handleResponse(response: Response) {
 }
 
 // Sends a GET request to the devices endpoint and returns one page of records
-// after validating the server response.
 export async function getDevices(params: DeviceListParams = {}): Promise<DeviceListResponse> {
-  // Build the query with URLSearchParams so values are encoded correctly and
-  // the backend receives only filters that the caller intentionally supplied.
   const searchParams = new URLSearchParams();
 
   if (params.page) searchParams.set("page", String(params.page));
@@ -30,28 +50,33 @@ export async function getDevices(params: DeviceListParams = {}): Promise<DeviceL
   if (params.sortDirection) searchParams.set("sort_direction", params.sortDirection);
 
   const query = searchParams.toString();
-  const response = await fetch(`${API_URL}/devices${query ? `?${query}` : ""}`);
+  const response = await fetch(`${API_URL}/devices${query ? `?${query}` : ""}`, {
+    headers: {
+      ...getStaffHeaders(),
+    },
+  });
   await handleResponse(response);
   return response.json();
 }
 
-// Sends a GET request for the device identified by `id`, validates the result,
-// and returns the matching device record.
+// Sends a GET request for the device identified by `id`
 export async function getDevice(id: string): Promise<DeviceRecord> {
-  const response = await fetch(`${API_URL}/devices/${id}`);
+  const response = await fetch(`${API_URL}/devices/${id}`, {
+    headers: {
+      ...getStaffHeaders(),
+    },
+  });
   await handleResponse(response);
   return response.json();
 }
 
-// Sends the form data as a JSON POST request to create a new device. The
-// newly created device record is returned after the response is validated.
+// Sends the form data as a JSON POST request to create a new device
 export async function createDevice(data: DeviceFormData): Promise<DeviceRecord> {
-  // The form sends optional empty values as null, matching the API model's
-  // distinction between an omitted detail and a meaningful string value.
   const response = await fetch(`${API_URL}/devices`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getStaffHeaders(),
     },
     body: JSON.stringify(data),
   });
@@ -60,8 +85,7 @@ export async function createDevice(data: DeviceFormData): Promise<DeviceRecord> 
   return response.json();
 }
 
-// Sends the updated form data as a JSON PUT request for the device identified
-// by `id`, then returns the updated device record.
+// Sends the updated form data as a JSON PUT request for the device identified by `id`
 export async function updateDevice(
   id: string,
   data: DeviceFormData,
@@ -70,6 +94,7 @@ export async function updateDevice(
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      ...getStaffHeaders(),
     },
     body: JSON.stringify(data),
   });
@@ -78,20 +103,60 @@ export async function updateDevice(
   return response.json();
 }
 
-// Sends a DELETE request for the device identified by `id`. Successful
-// deletion returns no data, while failed responses are handled consistently.
+// Sends a DELETE request for the device identified by `id`
 export async function deleteDevice(id: string): Promise<void> {
   const response = await fetch(`${API_URL}/devices/${id}`, {
     method: "DELETE",
+    headers: {
+      ...getStaffHeaders(),
+    },
   });
 
   await handleResponse(response);
 }
 
-// Sends a GET request to the public tracking endpoint for a ticket code
-export async function trackDevice(ticketCode: string): Promise<import("./types").DeviceTrackRecord> {
+// Sends a GET request to the public tracking endpoint for a ticket code (NO AUTH REQUIRED)
+export async function trackDevice(ticketCode: string): Promise<DeviceTrackRecord> {
   const response = await fetch(`${API_URL}/track/${encodeURIComponent(ticketCode.trim())}`);
   await handleResponse(response);
   return response.json();
 }
 
+// Fetches the list of charges and computed total for a device
+export async function getCharges(deviceId: string): Promise<ChargesSummary> {
+  const response = await fetch(`${API_URL}/devices/${deviceId}/charges`, {
+    headers: {
+      ...getStaffHeaders(),
+    },
+  });
+  await handleResponse(response);
+  return response.json();
+}
+
+// Adds a new charge for a device
+export async function addCharge(
+  deviceId: string,
+  data: ChargeFormData,
+): Promise<Charge> {
+  const response = await fetch(`${API_URL}/devices/${deviceId}/charges`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getStaffHeaders(),
+    },
+    body: JSON.stringify(data),
+  });
+  await handleResponse(response);
+  return response.json();
+}
+
+// Deletes a charge from a device
+export async function deleteCharge(deviceId: string, chargeId: string): Promise<void> {
+  const response = await fetch(`${API_URL}/devices/${deviceId}/charges/${chargeId}`, {
+    method: "DELETE",
+    headers: {
+      ...getStaffHeaders(),
+    },
+  });
+  await handleResponse(response);
+}
