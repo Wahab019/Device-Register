@@ -23,13 +23,10 @@ export function getStaffHeaders(): Record<string, string> {
   }
 
   const legacyKey = typeof window !== "undefined" ? localStorage.getItem("staff_api_key") : null;
-  const envKey = process.env.NEXT_PUBLIC_STAFF_API_KEY;
-  const key = legacyKey || envKey;
-
-  if (key) {
+  if (legacyKey) {
     return {
-      "x-staff-key": key,
-      Authorization: `Bearer ${key}`,
+      "x-staff-key": legacyKey,
+      Authorization: `Bearer ${legacyKey}`,
     };
   }
   return {};
@@ -180,7 +177,7 @@ export async function loginStaff(data: { email: string; password: string }): Pro
   return response.json();
 }
 
-export async function signupStaff(data: { email: string; password: string }): Promise<AuthResponse> {
+export async function signupStaff(data: { email: string; password: string; invite_code: string }): Promise<AuthResponse> {
   const response = await fetch(`${API_URL}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
