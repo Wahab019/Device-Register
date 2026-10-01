@@ -87,3 +87,11 @@ export async function deleteDevice(id: string): Promise<void> {
 
   await handleResponse(response);
 }
+
+// Sends a GET request to the public tracking endpoint for a ticket code
+export async function trackDevice(ticketCode: string): Promise<import("./types").DeviceTrackRecord> {
+  const response = await fetch(`${API_URL}/track/${encodeURIComponent(ticketCode.trim())}`);
+  await handleResponse(response);
+  return response.json();
+}
+
