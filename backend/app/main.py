@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.devices import router as devices_router
+from app.routes.track import router as track_router
 
 app = FastAPI(title="Device Register API")
 
@@ -32,3 +33,4 @@ def health_check():
 
 
 app.include_router(devices_router, prefix="/devices", tags=["devices"])
+app.include_router(track_router, prefix="/track", tags=["track"])
