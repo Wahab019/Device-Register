@@ -196,7 +196,7 @@ export default function TicketTrackingPage() {
             </section>
 
             {/* Status Timeline */}
-            <section>
+            <section className="mb-10">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-6">
                 Status History Timeline
               </h2>
@@ -239,6 +239,59 @@ export default function TicketTrackingPage() {
               ) : (
                 <div className="rounded-xl bg-slate-800/20 border border-dashed border-slate-700/40 p-6 text-center text-sm text-slate-400">
                   Initial status recorded: <span className="font-medium text-slate-200">{currentStatusConfig.label}</span>
+                </div>
+              )}
+            </section>
+
+            {/* Billing & Repair Charges Section */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Repair Charges & Bill
+                </h2>
+                {typeof record.total_charges === "number" && record.total_charges > 0 && (
+                  <span className="text-xs font-medium text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-800/40">
+                    Total: ${record.total_charges.toFixed(2)}
+                  </span>
+                )}
+              </div>
+
+              {record.charges && record.charges.length > 0 ? (
+                <div className="overflow-hidden rounded-xl border border-white/5 bg-slate-800/30">
+                  <div className="divide-y divide-white/5">
+                    {record.charges.map((charge, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors">
+                        <div>
+                          <p className="text-sm font-medium text-slate-200">{charge.description}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {new Date(charge.created_at).toLocaleDateString(undefined, {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
+                        </div>
+                        <span className="text-sm font-semibold font-mono text-slate-100">
+                          ${charge.amount.toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between bg-slate-800/70 px-4 py-3.5 border-t border-white/5">
+                    <span className="text-sm font-medium text-slate-300">Total Accumulated Bill</span>
+                    <span className="text-lg font-bold font-mono text-emerald-400">
+                      ${(record.total_charges ?? 0).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-xl bg-slate-800/20 border border-dashed border-slate-700/40 p-6 text-center text-sm text-slate-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-slate-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                  </svg>
+                  <p className="text-slate-300 font-medium">No charges added yet</p>
+                  <p className="text-xs text-slate-500 mt-1">Itemized service fees or parts will appear here as they are logged.</p>
                 </div>
               )}
             </section>
