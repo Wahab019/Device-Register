@@ -73,3 +73,23 @@ export type DeviceTrackRecord = {
   date_completed: string | null;
   status_history: StatusTimelineItem[];
 };
+
+// Billing and charges types
+export type Charge = {
+  id: string;
+  device_id: string;
+  description: string;
+  amount: number;
+  created_at: string;
+};
+
+export type ChargesSummary = {
+  items: Charge[];
+  total: number;
+};
+
+export type ChargeFormData = {
+  description: string;
+  amount: number;
+};
+
