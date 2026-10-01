@@ -8,6 +8,9 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
 from app.db import supabase
 from app.models import (
     ALLOWED_STATUSES,
+    ChargeCreate,
+    ChargeOut,
+    ChargesSummaryOut,
     DeviceCreate,
     DeviceListOut,
     DeviceOut,
@@ -261,3 +264,86 @@ def delete_device(device_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@router.get("/{device_id}/charges", response_model=ChargesSummaryOut)
+def list_charges(device_id: str):
+    try:
+        if supabase is None:
+            raise ValueError("Supabase client is not configured")
+
+        # Verify device exists
+        dev = supabase.table("device_records").select("id").eq("id", device_id).execute()
+        if not dev.data:
+            raise HTTPException(status_code=404, detail="Device record not found")
+
+        result = (
+            supabase.table("charges")
+            .select("*")
+            .eq("device_id", device_id)
+            .order("created_at", desc=False)
+            .execute()
+        )
+        items = [ChargeOut(**row) for row in (result.data or [])]
+        total = round(sum(item.amount for item in items), 2)
+        return ChargesSummaryOut(items=items, total=total)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Error listing charges: %s", e)
+        # If charges table not yet migrated, return empty list gracefully
+        return ChargesSummaryOut(items=[], total=0.0)
+
+
+@router.post("/{device_id}/charges", response_model=ChargeOut)
+def add_charge(device_id: str, charge: ChargeCreate):
+    try:
+        if supabase is None:
+            raise ValueError("Supabase client is not configured")
+
+        if charge.amount < 0:
+            raise HTTPException(status_code=422, detail="Charge amount cannot be negative")
+
+        # Verify device exists
+        dev = supabase.table("device_records").select("id").eq("id", device_id).execute()
+        if not dev.data:
+            raise HTTPException(status_code=404, detail="Device record not found")
+
+        payload = {
+            "device_id": device_id,
+            "description": charge.description.strip(),
+            "amount": round(charge.amount, 2),
+        }
+        result = supabase.table("charges").insert(payload).execute()
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Failed to add charge")
+
+        return ChargeOut(**result.data[0])
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@router.delete("/{device_id}/charges/{charge_id}")
+def delete_charge(device_id: str, charge_id: str):
+    try:
+        if supabase is None:
+            raise ValueError("Supabase client is not configured")
+
+        result = (
+            supabase.table("charges")
+            .delete()
+            .eq("id", charge_id)
+            .eq("device_id", device_id)
+            .execute()
+        )
+        if not result.data:
+            raise HTTPException(status_code=404, detail="Charge not found")
+
+        return {"message": "Charge deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
