@@ -2,7 +2,7 @@ import logging
 from fastapi import APIRouter, HTTPException
 
 from app.db import supabase
-from app.models import DeviceTrackOut, StatusTimelineItem
+from app.models import DeviceTrackOut, StatusTimelineItem, TrackChargeItem
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +62,25 @@ def track_device(ticket_code: str):
         except Exception as e:
             logger.warning("Could not fetch status history timeline: %s", e)
 
+        # Fetch itemized charges and total bill
+        charges: list[TrackChargeItem] = []
+        total_charges: float = 0.0
+        try:
+            charges_res = (
+                supabase.table("charges")
+                .select("description, amount, created_at")
+                .eq("device_id", device_id)
+                .order("created_at", desc=False)
+                .execute()
+            )
+            if charges_res.data:
+                charges = [
+                    TrackChargeItem.model_validate(c) for c in charges_res.data
+                ]
+                total_charges = round(sum(c.amount for c in charges), 2)
+        except Exception as e:
+            logger.warning("Could not fetch charges for tracking: %s", e)
+
         return DeviceTrackOut(
             status=device["status"],
             device_type=device["device_type"],
@@ -70,6 +89,8 @@ def track_device(ticket_code: str):
             date_received=device["date_received"],
             date_completed=device.get("date_completed"),
             status_history=timeline,
+            charges=charges,
+            total_charges=total_charges,
         )
     except HTTPException:
         raise
