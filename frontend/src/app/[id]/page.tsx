@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import DeviceForm from "../../components/DeviceForm";
+import ChargesPanel from "../../components/ChargesPanel";
 import { deleteDevice, getDevice } from "../../lib/api";
 import type { DeviceRecord } from "../../lib/types";
 
@@ -366,6 +367,8 @@ export default function DeviceDetailPage() {
                   </div>
                 </div>
               </section>
+
+              <ChargesPanel deviceId={record.id} />
             </div>
           </div>
         </div>
