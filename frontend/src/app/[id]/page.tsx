@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import DeviceForm from "../../components/DeviceForm";
+import ChargesPanel from "../../components/ChargesPanel";
+import StaffHeader from "../../components/StaffHeader";
+import { useAuth } from "../../lib/auth-context";
 import { deleteDevice, getDevice } from "../../lib/api";
 import type { DeviceRecord } from "../../lib/types";
 
@@ -19,13 +22,13 @@ const statusStyles: Record<
     label: "In Progress",
     classes: "bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20",
   },
+  ready_for_pickup: {
+    label: "Ready for Pickup",
+    classes: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
+  },
   completed: {
     label: "Completed",
     classes: "bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20",
-  },
-  picked_up: {
-    label: "Picked Up",
-    classes: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
   },
 };
 
@@ -49,6 +52,7 @@ export default function DeviceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const { user, loading: authLoading } = useAuth();
 
   const [record, setRecord] = useState<DeviceRecord | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,6 +60,12 @@ export default function DeviceDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
 
   // Fetches the current device details and manages loading and error states
   // while the request is in progress.
@@ -92,6 +102,14 @@ export default function DeviceDetailPage() {
     return () => window.clearTimeout(timeout);
   }, [fetchRecord]);
 
+  if (authLoading || !user) {
+    return (
+      <main className="min-h-screen px-4 py-16 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+      </main>
+    );
+  }
+
   if (loading) {
     // Keep the page structure stable during the request and avoid showing stale
     // details from a previous route while the new record is being fetched.
@@ -109,8 +127,9 @@ export default function DeviceDetailPage() {
     // The error branch includes navigation back to the list because a failed
     // detail request leaves the user without a usable record context.
     return (
-      <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl relative z-10">
+      <main className="min-h-screen pb-16">
+        <StaffHeader />
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10">
           <Link
             href="/"
             className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
@@ -140,8 +159,9 @@ export default function DeviceDetailPage() {
     // exits edit mode only after the API save has completed and then refreshes
     // the displayed record.
     return (
-      <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl relative z-10">
+      <main className="min-h-screen pb-16">
+        <StaffHeader />
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10">
           <Link
             href="/"
             className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
@@ -174,7 +194,10 @@ export default function DeviceDetailPage() {
 
   return (
     <>
-    <main className="screen-only min-h-screen px-4 py-12 sm:px-6 lg:px-8">
+    <div className="screen-only">
+      <StaffHeader />
+    </div>
+    <main className="screen-only min-h-screen pb-16 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl relative z-10">
         <Link
           href="/"
@@ -192,9 +215,25 @@ export default function DeviceDetailPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">
                   Device Details
                 </p>
-                <h1 className="text-3xl font-bold text-slate-100 drop-shadow-sm">
-                  {record.customer_name}
-                </h1>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className="text-3xl font-bold text-slate-100 drop-shadow-sm">
+                    {record.customer_name}
+                  </h1>
+                  {record.ticket_code && (
+                    <Link
+                      href={`/track/${record.ticket_code}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-xs font-semibold text-blue-400 bg-blue-950/60 border border-blue-800/60 px-3 py-1 rounded-full hover:bg-blue-900/60 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
+                      title="Open Public Tracking Page"
+                    >
+                      <span>{record.ticket_code}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </Link>
+                  )}
+                </div>
               </div>
 
               <div className="flex items-center gap-3">
@@ -350,6 +389,8 @@ export default function DeviceDetailPage() {
                   </div>
                 </div>
               </section>
+
+              <ChargesPanel deviceId={record.id} />
             </div>
           </div>
         </div>
@@ -364,6 +405,12 @@ export default function DeviceDetailPage() {
         <div className="receipt-meta">
           <p>Record ID</p>
           <strong>{record.id}</strong>
+          {record.ticket_code && (
+            <>
+              <p style={{ marginTop: '4px' }}>Ticket Code</p>
+              <strong>{record.ticket_code}</strong>
+            </>
+          )}
         </div>
       </header>
 
