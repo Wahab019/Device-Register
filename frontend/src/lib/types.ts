@@ -64,6 +64,12 @@ export type StatusTimelineItem = {
   changed_at: string;
 };
 
+export type TrackChargeItem = {
+  description: string;
+  amount: number;
+  created_at: string;
+};
+
 export type DeviceTrackRecord = {
   status: DeviceStatus | string;
   device_type: string;
@@ -72,6 +78,8 @@ export type DeviceTrackRecord = {
   date_received: string;
   date_completed: string | null;
   status_history: StatusTimelineItem[];
+  charges?: TrackChargeItem[];
+  total_charges?: number;
 };
 
 // Billing and charges types
@@ -92,4 +100,17 @@ export type ChargeFormData = {
   description: string;
   amount: number;
 };
+
+// Staff authentication types
+export type StaffUser = {
+  id: string;
+  email: string;
+};
+
+export type AuthResponse = {
+  access_token: string;
+  token_type: string;
+  user: StaffUser;
+};
+
 
