@@ -4,6 +4,11 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { toast } from "react-hot-toast";
 import { createDevice, updateDevice } from "../lib/api";
+import {
+  EMAIL_NOTIFIABLE_STATUSES,
+  STATUS_LABELS,
+  getValidNextStatuses,
+} from "../lib/status";
 import type { DeviceFormData, DeviceRecord, DeviceStatus } from "../lib/types";
 
 type DeviceFormProps = {
@@ -73,6 +78,16 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
   const router = useRouter();
   const [formData, setFormData] = useState<DeviceFormData>(() => getInitialFormData(initialData));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notifyCustomer, setNotifyCustomer] = useState(true);
+  const [showEmailConfirm, setShowEmailConfirm] = useState(false);
+  const [pendingPayload, setPendingPayload] = useState<DeviceFormData | null>(null);
+
+  const customerEmail = (formData.customer_email || initialData?.customer_email || "").trim();
+  const hasEmail = Boolean(customerEmail);
+
+  const currentStatus: DeviceStatus = initialData?.status ?? "pending";
+  const validNextStatuses = initialData ? getValidNextStatuses(currentStatus) : [];
+  const isTerminal = Boolean(initialData && validNextStatuses.length === 0);
 
   // Updates one field in the form while preserving all other field values.
   const updateField = (
@@ -82,28 +97,9 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
     setFormData((prev) => ({ ...prev, [field]: value } as DeviceFormData));
   };
 
-  // Validates the submit event, prepares optional values, saves the device,
-  // and then either calls the success callback or navigates back to the list.
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const executeSave = async (payload: DeviceFormData) => {
     setIsSubmitting(true);
-
     try {
-      // Keep the controlled form pleasant to edit by storing empty strings,
-      // then convert optional blanks to null for a consistent API payload.
-      const payload: DeviceFormData = {
-        ...formData,
-        customer_email: formData.customer_email?.trim() ? formData.customer_email : null,
-        device_brand: formData.device_brand?.trim() ? formData.device_brand : null,
-        device_model: formData.device_model?.trim() ? formData.device_model : null,
-        serial_number: formData.serial_number?.trim() ? formData.serial_number : null,
-        notes: formData.notes?.trim() ? formData.notes : null,
-        status: formData.status ?? "pending",
-        date_received: formData.date_received || new Date().toISOString().slice(0, 10),
-      };
-
-      // The same form serves both create and edit flows. The presence of an
-      // initial record is the single source of truth for choosing the method.
       if (initialData) {
         await updateDevice(initialData.id, payload);
         toast.success("Device updated successfully!");
@@ -126,7 +122,46 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
       toast.error(message);
     } finally {
       setIsSubmitting(false);
+      setShowEmailConfirm(false);
+      setPendingPayload(null);
     }
+  };
+
+  // Validates the submit event, prepares optional values, saves the device,
+  // and then either calls the success callback or navigates back to the list.
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedEmail = formData.customer_email?.trim() || (initialData?.customer_email ? initialData.customer_email.trim() : null);
+
+    const payload: DeviceFormData = {
+      ...formData,
+      customer_email: normalizedEmail,
+      device_brand: formData.device_brand?.trim() ? formData.device_brand : null,
+      device_model: formData.device_model?.trim() ? formData.device_model : null,
+      serial_number: formData.serial_number?.trim() ? formData.serial_number : null,
+      notes: formData.notes?.trim() ? formData.notes : null,
+      status: formData.status ?? "pending",
+      date_received: formData.date_received || new Date().toISOString().slice(0, 10),
+      notify_customer: hasEmail ? notifyCustomer : false,
+    };
+
+    if (initialData) {
+      const statusChanged = payload.status !== initialData.status;
+      const willEmail =
+        hasEmail &&
+        notifyCustomer &&
+        statusChanged &&
+        EMAIL_NOTIFIABLE_STATUSES.includes(payload.status as DeviceStatus);
+
+      if (willEmail) {
+        setPendingPayload(payload);
+        setShowEmailConfirm(true);
+        return;
+      }
+    }
+
+    await executeSave(payload);
   };
 
   return (
@@ -257,30 +292,65 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
           />
         </div>
 
-        {/* Status is editable only for existing records; new records always
-          start pending and receive that default in getDefaultFormData. */}
+        {/* Status and notification controls are available when editing existing records */}
         {initialData && (
-          <div className="space-y-2 md:col-span-1">
-            <label htmlFor="status" className="block text-sm font-medium text-slate-300">
-              Status
-            </label>
-            <select
-              id="status"
-              value={formData.status ?? "pending"}
-              onChange={(event) =>
-                updateField(
-                  "status",
-                  event.target.value as DeviceStatus,
-                )
-              }
-              className="w-full rounded-xl glass-input px-4 py-3 text-sm appearance-none"
-            >
-              <option value="pending" className="bg-slate-800">Pending</option>
-              <option value="in_progress" className="bg-slate-800">In Progress</option>
-              <option value="ready_for_pickup" className="bg-slate-800">Ready for Pickup</option>
-              <option value="completed" className="bg-slate-800">Completed</option>
-            </select>
-          </div>
+          <>
+            <div className="space-y-2 md:col-span-1">
+              <label htmlFor="status" className="block text-sm font-medium text-slate-300">
+                Status
+              </label>
+              <select
+                id="status"
+                value={formData.status ?? initialData.status}
+                disabled={isTerminal}
+                onChange={(event) =>
+                  updateField(
+                    "status",
+                    event.target.value as DeviceStatus,
+                  )
+                }
+                className="w-full rounded-xl glass-input px-4 py-3 text-sm appearance-none disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <option value={initialData.status} className="bg-slate-800">
+                  {STATUS_LABELS[initialData.status]} (Current)
+                </option>
+                {validNextStatuses.map((nextStatus) => (
+                  <option key={nextStatus} value={nextStatus} className="bg-slate-800">
+                    {STATUS_LABELS[nextStatus]}
+                  </option>
+                ))}
+              </select>
+              {isTerminal && (
+                <p className="text-xs text-slate-400 mt-1">
+                  This repair is in a final state ({STATUS_LABELS[initialData.status]}) and cannot be transitioned further.
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2 md:col-span-1 flex flex-col justify-end">
+              <div className="flex items-center gap-3 py-3 px-1">
+                <input
+                  type="checkbox"
+                  id="notify_customer"
+                  checked={hasEmail && notifyCustomer}
+                  disabled={!hasEmail || isSubmitting}
+                  onChange={(e) => setNotifyCustomer(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500 disabled:opacity-50 cursor-pointer"
+                />
+                <label
+                  htmlFor="notify_customer"
+                  className={`text-sm select-none ${hasEmail ? "text-slate-300 cursor-pointer" : "text-slate-500"}`}
+                >
+                  Notify customer by email
+                  {!hasEmail && (
+                    <span className="ml-2 inline-flex items-center rounded bg-slate-800 px-2 py-0.5 text-xs text-amber-400 border border-amber-500/20">
+                      No email on file
+                    </span>
+                  )}
+                </label>
+              </div>
+            </div>
+          </>
         )}
 
         <div className="space-y-2 md:col-span-2">
@@ -330,6 +400,51 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
           )}
         </button>
       </div>
+
+      {/* Confirmation step before sending customer notification email */}
+      {showEmailConfirm && pendingPayload && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="glass-panel max-w-md w-full p-6 space-y-4 border border-blue-500/30 shadow-2xl relative">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-slate-100">Send Status Notification</h3>
+                <p className="text-xs text-slate-400">Customer email confirmation</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-300">
+              This will email <strong className="text-blue-400 font-mono">{pendingPayload.customer_email}</strong>.
+            </p>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEmailConfirm(false);
+                  setPendingPayload(null);
+                }}
+                disabled={isSubmitting}
+                className="rounded-xl px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => executeSave(pendingPayload)}
+                disabled={isSubmitting}
+                className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md hover:bg-blue-500 transition flex items-center gap-2"
+              >
+                {isSubmitting ? "Updating..." : "Confirm & Send"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
