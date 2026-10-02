@@ -4,6 +4,14 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import verify_staff_key
+from app.models import (
+    ALLOWED_STATUSES,
+    EMAIL_NOTIFIABLE_STATUSES,
+    STATUS_LABELS,
+    STATUS_MESSAGES,
+    STATUS_TRANSITIONS,
+    StatusConfigOut,
+)
 from app.routes.auth import router as auth_router
 from app.routes.devices import router as devices_router
 from app.routes.track import router as track_router
@@ -32,6 +40,18 @@ app.add_middleware(
 @app.get("/")
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/status-config", response_model=StatusConfigOut, tags=["status"])
+def get_public_status_config():
+    """Returns single source of truth for statuses, labels, plain messages, transitions, and email policy."""
+    return StatusConfigOut(
+        statuses=list(ALLOWED_STATUSES),
+        labels=STATUS_LABELS,
+        messages=STATUS_MESSAGES,
+        transitions=STATUS_TRANSITIONS,
+        email_statuses=list(EMAIL_NOTIFIABLE_STATUSES),
+    )
 
 
 # Staff Auth endpoints (login, signup, me)
