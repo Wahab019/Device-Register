@@ -8,17 +8,13 @@ import StaffHeader from "../components/StaffHeader";
 import { useAuth } from "../lib/auth-context";
 import { getDevices } from "../lib/api";
 import type { DeviceRecord } from "../lib/types";
+import { STATUS_LABELS } from "../lib/status";
 
 const PAGE_SIZE = 20;
 type SortColumn = "customer_name" | "date_received" | "status";
 type SortDirection = "asc" | "desc";
 
-const statusLabels: Record<DeviceRecord["status"], string> = {
-  pending: "Pending",
-  in_progress: "In Progress",
-  ready_for_pickup: "Ready for Pickup",
-  completed: "Completed",
-};
+const statusLabels: Record<DeviceRecord["status"], string> = STATUS_LABELS;
 
 function formatDate(value: string | null) {
   // Exported dates should be readable to staff and should remain blank when
@@ -301,8 +297,10 @@ export default function HomePage() {
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
             <option value="in_progress">In Progress</option>
+            <option value="awaiting_approval">Awaiting Approval</option>
             <option value="ready_for_pickup">Ready for Pickup</option>
             <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
 

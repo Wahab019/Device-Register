@@ -8,6 +8,10 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
 from app.db import supabase
 from app.models import (
     ALLOWED_STATUSES,
+    EMAIL_NOTIFIABLE_STATUSES,
+    STATUS_LABELS,
+    STATUS_MESSAGES,
+    STATUS_TRANSITIONS,
     ChargeCreate,
     ChargeOut,
     ChargesSummaryOut,
@@ -16,6 +20,8 @@ from app.models import (
     DeviceOut,
     DeviceStatus,
     DeviceUpdate,
+    StatusConfigOut,
+    validate_status_transition,
 )
 from app.services.email import (
     send_creation_email_background,
@@ -151,6 +157,18 @@ def list_devices(
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
+@router.get("/status-config", response_model=StatusConfigOut)
+def get_status_config():
+    """Returns the single source of truth for statuses, labels, plain messages, transitions, and email policy."""
+    return StatusConfigOut(
+        statuses=list(ALLOWED_STATUSES),
+        labels=STATUS_LABELS,
+        messages=STATUS_MESSAGES,
+        transitions=STATUS_TRANSITIONS,
+        email_statuses=list(EMAIL_NOTIFIABLE_STATUSES),
+    )
+
+
 @router.get("/{device_id}", response_model=DeviceOut)
 def get_device(device_id: str):
     try:
@@ -188,15 +206,21 @@ def update_device(device_id: str, device: DeviceUpdate, background_tasks: Backgr
         old_status = current_record.get("status")
 
         new_status = device.status
+        # Validate status transition if a status was supplied
+        if new_status is not None:
+            validate_status_transition(old_status, new_status)
+
         status_changed = new_status is not None and new_status != old_status
 
         update_data = device.model_dump(exclude_none=True)
+        # notify_customer is an API workflow parameter, not a column in device_records
+        notify_customer = update_data.pop("notify_customer", True)
 
-        # 2. Update status and dates
+        # 2. Update status and dates (set date_completed on completed or cancelled)
         if status_changed:
-            if new_status == "completed" and "date_completed" not in device.model_fields_set:
+            if new_status in ("completed", "cancelled") and "date_completed" not in device.model_fields_set:
                 update_data["date_completed"] = datetime.now(timezone.utc).isoformat()
-            elif new_status != "completed" and "date_completed" not in device.model_fields_set:
+            elif new_status not in ("completed", "cancelled") and "date_completed" not in device.model_fields_set:
                 update_data["date_completed"] = None
 
         update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -207,7 +231,7 @@ def update_device(device_id: str, device: DeviceUpdate, background_tasks: Backgr
 
         updated_record = result.data[0]
 
-        # 3. If status changed, insert into status_history & send email
+        # 3. If status changed, insert into status_history & optionally send email
         if status_changed:
             history_id = None
             try:
@@ -228,11 +252,20 @@ def update_device(device_id: str, device: DeviceUpdate, background_tasks: Backgr
             except Exception as e:
                 logger.warning("Could not insert status_history: %s", e)
 
-            # 4 & 5. If customer_email exists, send status-change email.
-            # Completed is the final status, so emails stop after that one.
+            # 4. Email notification rules:
+            # - Customer emails sent ONLY for: pending, awaiting_approval, ready_for_pickup, completed, cancelled
+            # - Do NOT email for in_progress
+            # - Respect notify_customer flag
             customer_email = updated_record.get("customer_email")
             ticket_code = updated_record.get("ticket_code")
-            if old_status != "completed" and customer_email and ticket_code:
+            should_send_email = (
+                notify_customer
+                and new_status in EMAIL_NOTIFIABLE_STATUSES
+                and bool(customer_email)
+                and bool(ticket_code)
+            )
+
+            if should_send_email:
                 device_name = format_device_name(updated_record)
                 background_tasks.add_task(
                     send_status_change_email_background,
@@ -241,6 +274,7 @@ def update_device(device_id: str, device: DeviceUpdate, background_tasks: Backgr
                     ticket_code,
                     device_name,
                     new_status,
+                    device_id,
                 )
 
         return DeviceOut.model_validate(updated_record)

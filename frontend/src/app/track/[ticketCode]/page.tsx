@@ -5,36 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { trackDevice } from "../../../lib/api";
 import type { DeviceTrackRecord } from "../../../lib/types";
-
-const statusStyles: Record<
-  string,
-  { label: string; badgeClasses: string; dotClasses: string }
-> = {
-  pending: {
-    label: "Pending",
-    badgeClasses: "bg-slate-800/80 border-slate-700 text-slate-300 shadow-slate-900/50",
-    dotClasses: "bg-slate-400 ring-slate-500/20",
-  },
-  in_progress: {
-    label: "In Progress",
-    badgeClasses: "bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20",
-    dotClasses: "bg-amber-400 ring-amber-500/20",
-  },
-  ready_for_pickup: {
-    label: "Ready for Pickup",
-    badgeClasses: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
-    dotClasses: "bg-emerald-400 ring-emerald-500/20",
-  },
-  completed: {
-    label: "Completed",
-    badgeClasses: "bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20",
-    dotClasses: "bg-blue-400 ring-blue-500/20",
-  },
-};
-
-function formatStatus(status: string) {
-  return statusStyles[status]?.label ?? status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
+import { getStatusMessage, getStatusStyle } from "../../../lib/status";
 
 function formatNaira(amount: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -117,11 +88,8 @@ export default function TicketTrackingPage() {
     );
   }
 
-  const currentStatusConfig = statusStyles[record.status] ?? {
-    label: formatStatus(record.status),
-    badgeClasses: "bg-slate-800 text-slate-300 border-slate-700",
-    dotClasses: "bg-slate-400",
-  };
+  const currentStatusConfig = getStatusStyle(record.status);
+  const statusMessage = getStatusMessage(record.status);
 
   const deviceFullName = [record.device_type, record.device_brand, record.device_model]
     .filter(Boolean)
@@ -162,6 +130,21 @@ export default function TicketTrackingPage() {
                   >
                     {currentStatusConfig.label}
                   </span>
+                </div>
+              </div>
+
+              {/* Prominent plain-language message under the status badge */}
+              <div className="mt-6 rounded-2xl bg-slate-800/60 border border-slate-700/60 p-4 sm:p-5 shadow-lg backdrop-blur-md flex items-start gap-3.5">
+                <div
+                  className={`mt-1.5 w-3 h-3 rounded-full shrink-0 ${currentStatusConfig.dotClasses} ring-4 ring-slate-800 animate-pulse`}
+                />
+                <div className="space-y-0.5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    Latest Update
+                  </p>
+                  <p className="text-base sm:text-lg font-medium text-slate-100 leading-snug">
+                    {statusMessage}
+                  </p>
                 </div>
               </div>
             </div>
@@ -211,11 +194,7 @@ export default function TicketTrackingPage() {
               {record.status_history && record.status_history.length > 0 ? (
                 <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-700/60">
                   {record.status_history.map((item, index) => {
-                    const itemStyle = statusStyles[item.new_status] ?? {
-                      label: formatStatus(item.new_status),
-                      badgeClasses: "",
-                      dotClasses: "bg-slate-400",
-                    };
+                    const itemStyle = getStatusStyle(item.new_status);
                     const isLatest = index === record.status_history.length - 1;
 
                     return (

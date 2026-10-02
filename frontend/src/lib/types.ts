@@ -1,4 +1,18 @@
-export type DeviceStatus = "pending" | "in_progress" | "ready_for_pickup" | "completed";
+export type DeviceStatus =
+  | "pending"
+  | "in_progress"
+  | "awaiting_approval"
+  | "ready_for_pickup"
+  | "completed"
+  | "cancelled";
+
+export type StatusConfig = {
+  statuses: DeviceStatus[];
+  labels: Record<DeviceStatus, string>;
+  messages: Record<DeviceStatus, string>;
+  transitions: Record<DeviceStatus, DeviceStatus[]>;
+  email_statuses: DeviceStatus[];
+};
 
 // The complete representation returned by the backend for an existing record.
 // Nullable fields are optional in the database and are rendered with a UI
@@ -36,6 +50,7 @@ export type DeviceFormData = {
   status?: DeviceStatus;
   date_received?: string;
   notes?: string | null;
+  notify_customer?: boolean;
 };
 
 // A paginated response keeps the current slice and total count together so the
