@@ -2,34 +2,13 @@
 
 import Link from "next/link";
 import type { DeviceRecord } from "../lib/types";
+import { getStatusStyle } from "../lib/status";
 
 type DeviceTableProps = {
   devices: DeviceRecord[];
   sortColumn: SortColumn;
   sortDirection: SortDirection;
   onSort: (column: SortColumn) => void;
-};
-
-const statusStyles: Record<
-  DeviceRecord["status"],
-  { label: string; classes: string }
-> = {
-  pending: {
-    label: "Pending",
-    classes: "bg-slate-100 text-slate-700",
-  },
-  in_progress: {
-    label: "In Progress",
-    classes: "bg-yellow-100 text-yellow-800",
-  },
-  ready_for_pickup: {
-    label: "Ready for Pickup",
-    classes: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
-  },
-  completed: {
-    label: "Completed",
-    classes: "bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20",
-  },
 };
 
 // The table owns the status presentation so every row uses the same label and
@@ -126,7 +105,7 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
         <tbody className="divide-y divide-white/5">
           {/* Render one table row with the device details and its view link. */}
           {devices.map((device) => {
-            const status = statusStyles[device.status];
+            const status = getStatusStyle(device.status);
 
             return (
               <tr key={device.id} className="transition-all duration-200 hover:bg-slate-800/60 group relative z-0">
@@ -150,12 +129,7 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
                 <td className="px-6 py-4 text-slate-300">{formatDeviceName(device)}</td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <span
-                    className={`inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium border shadow-sm ${
-                      device.status === 'pending' ? 'bg-slate-800/80 border-slate-700 text-slate-300 shadow-slate-900/50' :
-                      device.status === 'in_progress' ? 'bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20' :
-                      device.status === 'ready_for_pickup' ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20' :
-                      'bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20'
-                    }`}
+                    className={`inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium border shadow-sm ${status.badgeClasses}`}
                   >
                     {status.label}
                   </span>
