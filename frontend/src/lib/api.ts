@@ -9,6 +9,7 @@ import type {
   DeviceRecord,
   DeviceTrackRecord,
   StaffUser,
+  StatusConfig,
 } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -123,6 +124,13 @@ export async function deleteDevice(id: string): Promise<void> {
 // Sends a GET request to the public tracking endpoint for a ticket code (NO AUTH REQUIRED)
 export async function trackDevice(ticketCode: string): Promise<DeviceTrackRecord> {
   const response = await fetch(`${API_URL}/track/${encodeURIComponent(ticketCode.trim())}`);
+  await handleResponse(response);
+  return response.json();
+}
+
+// Fetches the single source of truth for status workflow configuration
+export async function getStatusConfig(): Promise<StatusConfig> {
+  const response = await fetch(`${API_URL}/status-config`);
   await handleResponse(response);
   return response.json();
 }
