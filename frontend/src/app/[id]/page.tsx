@@ -10,26 +10,35 @@ import { useAuth } from "../../lib/auth-context";
 import { deleteDevice, getDevice, resendTrackingEmail } from "../../lib/api";
 import toast from "react-hot-toast";
 import type { DeviceRecord } from "../../lib/types";
+import { STATUS_STYLES } from "../../lib/status";
 
 const statusStyles: Record<
   DeviceRecord["status"],
   { label: string; classes: string }
 > = {
   pending: {
-    label: "Pending",
-    classes: "bg-slate-800/80 border-slate-700 text-slate-300 shadow-slate-900/50",
+    label: STATUS_STYLES.pending.label,
+    classes: STATUS_STYLES.pending.badgeClasses,
   },
   in_progress: {
-    label: "In Progress",
-    classes: "bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20",
+    label: STATUS_STYLES.in_progress.label,
+    classes: STATUS_STYLES.in_progress.badgeClasses,
+  },
+  awaiting_approval: {
+    label: STATUS_STYLES.awaiting_approval.label,
+    classes: STATUS_STYLES.awaiting_approval.badgeClasses,
   },
   ready_for_pickup: {
-    label: "Ready for Pickup",
-    classes: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
+    label: STATUS_STYLES.ready_for_pickup.label,
+    classes: STATUS_STYLES.ready_for_pickup.badgeClasses,
   },
   completed: {
-    label: "Completed",
-    classes: "bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20",
+    label: STATUS_STYLES.completed.label,
+    classes: STATUS_STYLES.completed.badgeClasses,
+  },
+  cancelled: {
+    label: STATUS_STYLES.cancelled.label,
+    classes: STATUS_STYLES.cancelled.badgeClasses,
   },
 };
 
