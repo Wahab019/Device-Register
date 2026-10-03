@@ -261,7 +261,7 @@ export default function DeviceDetailPage() {
                   <h1 className="text-3xl font-bold text-slate-100 drop-shadow-sm">
                     {record.customer_name}
                   </h1>
-                  {record.ticket_code && (
+                  {/* {record.ticket_code && (
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
                         href={`/track/${record.ticket_code}`}
@@ -307,7 +307,7 @@ export default function DeviceDetailPage() {
                         </button>
                       )}
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
 
