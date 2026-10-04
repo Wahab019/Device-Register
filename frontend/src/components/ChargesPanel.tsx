@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { type ChangeEvent, type FormEvent, useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { addCharge, deleteCharge, getCharges } from "../lib/api";
 import type { Charge } from "../lib/types";
@@ -14,6 +14,22 @@ function formatCurrency(amount: number) {
     style: "currency",
     currency: "NGN",
   }).format(amount);
+}
+
+function formatNumberWithCommas(value: string) {
+  // Strip non-numeric/non-dot characters
+  const cleanValue = value.replace(/[^0-9.]/g, "");
+  if (!cleanValue) return "";
+
+  // Split into integer and optional decimal parts
+  const parts = cleanValue.split(".");
+  const intPart = parts[0];
+  const decPart = parts.length > 1 ? parts.slice(1).join("").slice(0, 2) : undefined;
+
+  // Add comma thousand separators to integer part
+  const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  return decPart !== undefined ? `${formattedInt}.${decPart}` : formattedInt;
 }
 
 export default function ChargesPanel({ deviceId }: ChargesPanelProps) {
@@ -49,7 +65,7 @@ export default function ChargesPanel({ deviceId }: ChargesPanelProps) {
   const handleAddCharge = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const cleanDesc = description.trim();
-    const numAmount = parseFloat(amount);
+    const numAmount = parseFloat(amount.replace(/,/g, ""));
 
     if (!cleanDesc) {
       toast.error("Please enter a charge description.");
@@ -204,17 +220,16 @@ export default function ChargesPanel({ deviceId }: ChargesPanelProps) {
             />
           </div>
 
-          <div className="w-full sm:w-36 space-y-1.5">
+          <div className="w-full sm:w-40 space-y-1.5">
             <label htmlFor="charge_amount" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
               Amount (₦)
             </label>
             <input
               id="charge_amount"
-              type="number"
-              step="0.01"
-              min="0"
+              type="text"
+              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setAmount(formatNumberWithCommas(e.target.value))}
               placeholder="0.00"
               className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm font-mono"
               required
