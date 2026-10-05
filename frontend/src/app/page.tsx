@@ -258,12 +258,12 @@ export default function HomePage() {
               Export CSV
             </button>
 
-            <Link
+            {/* <Link
               href="/track"
               className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 px-5 py-3 text-sm font-semibold text-slate-300 shadow-lg transition-all hover:border-blue-500/50 hover:bg-slate-700 hover:text-white"
             >
               Public Tracker
-            </Link>
+            </Link> */}
 
             <Link
               href="/new"
