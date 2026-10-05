@@ -24,14 +24,14 @@ export default function StaffHeader() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
+          {/* <Link
             href="/track"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs font-medium text-slate-400 hover:text-blue-400 transition-colors"
           >
             Public Tracker ↗
-          </Link>
+          </Link> */}
 
           {user && (
             <button
