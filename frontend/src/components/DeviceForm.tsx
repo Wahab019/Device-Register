@@ -11,6 +11,58 @@ import {
 } from "../lib/status";
 import type { DeviceFormData, DeviceRecord, DeviceStatus } from "../lib/types";
 
+const ACCESSORIES = ["Charger", "SIM Card", "Case", "Box"] as const;
+const CONDITIONS = ["Scratched", "Cracked Screen", "Water Damage"] as const;
+
+const CHECKLIST_SEPARATOR = "\n\n---intake-checklist---\n";
+
+function serializeChecklist(
+  accessories: string[],
+  conditions: string[],
+  rawNotes: string,
+): string {
+  const parts: string[] = [];
+  if (accessories.length > 0) {
+    parts.push(`Accessories: ${accessories.join(", ")}`);
+  }
+  if (conditions.length > 0) {
+    parts.push(`Condition: ${conditions.join(", ")}`);
+  }
+  const checklist = parts.join("\n");
+  if (!checklist) return rawNotes.trim();
+  return rawNotes.trim()
+    ? `${rawNotes.trim()}${CHECKLIST_SEPARATOR}${checklist}`
+    : `${CHECKLIST_SEPARATOR.trimStart()}${checklist}`;
+}
+
+function parseChecklist(notes: string | null | undefined): {
+  rawNotes: string;
+  accessories: string[];
+  conditions: string[];
+} {
+  if (!notes) return { rawNotes: "", accessories: [], conditions: [] };
+  const idx = notes.indexOf(CHECKLIST_SEPARATOR);
+  if (idx === -1) return { rawNotes: notes, accessories: [], conditions: [] };
+
+  const rawNotes = notes.slice(0, idx).trim();
+  const block = notes.slice(idx + CHECKLIST_SEPARATOR.length);
+
+  const accessories: string[] = [];
+  const conditions: string[] = [];
+
+  for (const line of block.split("\n")) {
+    if (line.startsWith("Accessories:")) {
+      const items = line.replace("Accessories:", "").trim().split(", ");
+      accessories.push(...items.filter((i) => (ACCESSORIES as readonly string[]).includes(i)));
+    } else if (line.startsWith("Condition:")) {
+      const items = line.replace("Condition:", "").trim().split(", ");
+      conditions.push(...items.filter((i) => (CONDITIONS as readonly string[]).includes(i)));
+    }
+  }
+
+  return { rawNotes, accessories, conditions };
+}
+
 type DeviceFormProps = {
   initialData?: DeviceRecord;
   onSuccess?: () => void;
@@ -68,7 +120,7 @@ const getInitialFormData = (initialData?: DeviceRecord): DeviceFormData => {
     issue_description: initialData.issue_description,
     status: initialData.status,
     date_received: initialData.date_received,
-    notes: initialData.notes ?? "",
+    notes: parseChecklist(initialData.notes).rawNotes,
   };
 };
 
@@ -81,6 +133,15 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
   const [notifyCustomer, setNotifyCustomer] = useState(true);
   const [showEmailConfirm, setShowEmailConfirm] = useState(false);
   const [pendingPayload, setPendingPayload] = useState<DeviceFormData | null>(null);
+
+  // Parse checklist from initial notes if editing an existing record
+  const parsedInitial = parseChecklist(initialData?.notes);
+  const [checkedAccessories, setCheckedAccessories] = useState<string[]>(parsedInitial.accessories);
+  const [checkedConditions, setCheckedConditions] = useState<string[]>(parsedInitial.conditions);
+
+  const toggleItem = (list: string[], setList: (v: string[]) => void, item: string) => {
+    setList(list.includes(item) ? list.filter((i) => i !== item) : [...list, item]);
+  };
 
   const customerEmail = (formData.customer_email || initialData?.customer_email || "").trim();
   const hasEmail = Boolean(customerEmail);
@@ -134,13 +195,20 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
 
     const normalizedEmail = formData.customer_email?.trim() || (initialData?.customer_email ? initialData.customer_email.trim() : null);
 
+    // Serialize checklist into notes before submitting
+    const serializedNotes = serializeChecklist(
+      checkedAccessories,
+      checkedConditions,
+      formData.notes?.trim() ?? "",
+    );
+
     const payload: DeviceFormData = {
       ...formData,
       customer_email: normalizedEmail,
       device_brand: formData.device_brand?.trim() ? formData.device_brand : null,
       device_model: formData.device_model?.trim() ? formData.device_model : null,
       serial_number: formData.serial_number?.trim() ? formData.serial_number : null,
-      notes: formData.notes?.trim() ? formData.notes : null,
+      notes: serializedNotes || null,
       status: formData.status ?? "pending",
       date_received: formData.date_received || new Date().toISOString().slice(0, 10),
       notify_customer: hasEmail ? notifyCustomer : false,
@@ -380,6 +448,81 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
             className="w-full rounded-xl glass-input px-4 py-3 text-sm resize-none"
             placeholder="Any additional notes or internal details..."
           />
+        </div>
+
+        {/* Intake Checklist */}
+        <div className="md:col-span-2 space-y-4 rounded-xl border border-white/5 bg-slate-800/30 p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <span className="text-sm font-semibold text-slate-200">Intake Checklist</span>
+            <span className="ml-auto text-xs text-slate-500">Protects against customer disputes</span>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2.5">Accessories Left Behind</p>
+            <div className="flex flex-wrap gap-2">
+              {ACCESSORIES.map((item) => {
+                const checked = checkedAccessories.includes(item);
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => toggleItem(checkedAccessories, setCheckedAccessories, item)}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                      checked
+                        ? "border-blue-500/60 bg-blue-500/15 text-blue-300 shadow-sm"
+                        : "border-slate-700 bg-slate-800/60 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                    }`}
+                  >
+                    <span className={`h-3 w-3 rounded-sm border flex items-center justify-center shrink-0 ${
+                      checked ? "border-blue-400 bg-blue-500" : "border-slate-600"
+                    }`}>
+                      {checked && (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </span>
+                    {item}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2.5">Physical Condition</p>
+            <div className="flex flex-wrap gap-2">
+              {CONDITIONS.map((item) => {
+                const checked = checkedConditions.includes(item);
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => toggleItem(checkedConditions, setCheckedConditions, item)}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                      checked
+                        ? "border-amber-500/60 bg-amber-500/15 text-amber-300 shadow-sm"
+                        : "border-slate-700 bg-slate-800/60 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                    }`}
+                  >
+                    <span className={`h-3 w-3 rounded-sm border flex items-center justify-center shrink-0 ${
+                      checked ? "border-amber-400 bg-amber-500" : "border-slate-600"
+                    }`}>
+                      {checked && (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </span>
+                    {item}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 

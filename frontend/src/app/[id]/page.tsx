@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -11,6 +11,30 @@ import { deleteDevice, getDevice, resendTrackingEmail } from "../../lib/api";
 import toast from "react-hot-toast";
 import type { DeviceRecord } from "../../lib/types";
 import { STATUS_STYLES } from "../../lib/status";
+
+const CHECKLIST_SEPARATOR = "\n\n---intake-checklist---\n";
+
+function parseChecklist(notes: string | null | undefined): {
+  rawNotes: string;
+  accessories: string[];
+  conditions: string[];
+} {
+  if (!notes) return { rawNotes: "", accessories: [], conditions: [] };
+  const idx = notes.indexOf(CHECKLIST_SEPARATOR);
+  if (idx === -1) return { rawNotes: notes, accessories: [], conditions: [] };
+  const rawNotes = notes.slice(0, idx).trim();
+  const block = notes.slice(idx + CHECKLIST_SEPARATOR.length);
+  const accessories: string[] = [];
+  const conditions: string[] = [];
+  for (const line of block.split("\n")) {
+    if (line.startsWith("Accessories:")) {
+      accessories.push(...line.replace("Accessories:", "").trim().split(", ").filter(Boolean));
+    } else if (line.startsWith("Condition:")) {
+      conditions.push(...line.replace("Condition:", "").trim().split(", ").filter(Boolean));
+    }
+  }
+  return { rawNotes, accessories, conditions };
+}
 
 const statusStyles: Record<
   DeviceRecord["status"],
@@ -176,7 +200,7 @@ export default function DeviceDetailPage() {
             href="/"
             className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
           >
-            <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span> Back to records
+            <span className="mr-2 transition-transform group-hover:-translate-x-1">â†</span> Back to records
           </Link>
 
           <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-6 py-4 text-sm text-red-400 backdrop-blur-md flex items-center gap-3 shadow-sm">
@@ -208,7 +232,7 @@ export default function DeviceDetailPage() {
             href="/"
             className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
           >
-            <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span> Back to records
+            <span className="mr-2 transition-transform group-hover:-translate-x-1">â†</span> Back to records
           </Link>
 
           <div className="glass-panel p-8 sm:p-10 relative">
@@ -245,7 +269,7 @@ export default function DeviceDetailPage() {
           href="/"
           className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
         >
-          <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span> Back to records
+          <span className="mr-2 transition-transform group-hover:-translate-x-1">â†</span> Back to records
         </Link>
 
         <div className="glass-panel p-8 sm:p-10 relative">
@@ -399,7 +423,7 @@ export default function DeviceDetailPage() {
                   </div>
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Email</div>
-                    <div className="mt-1.5 text-slate-200 font-medium wrap-break-word">{record.customer_email ?? "—"}</div>
+                    <div className="mt-1.5 text-slate-200 font-medium wrap-break-word">{record.customer_email ?? "â€”"}</div>
                   </div>
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Status</div>
@@ -421,15 +445,15 @@ export default function DeviceDetailPage() {
                   </div>
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Brand</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.device_brand ?? "—"}</div>
+                    <div className="mt-1.5 text-slate-200 font-medium">{record.device_brand ?? "â€”"}</div>
                   </div>
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Model</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.device_model ?? "—"}</div>
+                    <div className="mt-1.5 text-slate-200 font-medium">{record.device_model ?? "â€”"}</div>
                   </div>
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Serial Number</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.serial_number ?? "—"}</div>
+                    <div className="mt-1.5 text-slate-200 font-medium">{record.serial_number ?? "â€”"}</div>
                   </div>
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Date Received</div>
@@ -440,14 +464,14 @@ export default function DeviceDetailPage() {
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Date Completed</div>
                     <div className="mt-1.5 text-slate-200 font-medium">
-                      {record.date_completed ? new Date(record.date_completed).toLocaleDateString() : "—"}
+                      {record.date_completed ? new Date(record.date_completed).toLocaleDateString() : "â€”"}
                     </div>
                   </div>
                 </div>
               </section>
 
               <section>
-                <h2 className="mb-5 text-xl font-semibold text-slate-200 border-b border-white/5 pb-2">Issue & Notes</h2>
+                <h2 className="mb-5 text-xl font-semibold text-slate-200 border-b border-white/5 pb-2">Issue &amp; Notes</h2>
                 <div className="space-y-4">
                   <div className="rounded-xl bg-slate-800/40 border border-white/5 p-5 transition hover:bg-slate-800/60">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Reported Issue</div>
@@ -456,12 +480,61 @@ export default function DeviceDetailPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-5 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Internal Notes</div>
-                    <div className="mt-3 whitespace-pre-wrap text-slate-400 italic leading-relaxed">
-                      {record.notes ? record.notes : "No notes provided."}
-                    </div>
-                  </div>
+                  {(() => {
+                    const { rawNotes, accessories, conditions } = parseChecklist(record.notes);
+                    const hasChecklist = accessories.length > 0 || conditions.length > 0;
+                    return (
+                      <>
+                        {hasChecklist && (
+                          <div className="rounded-xl bg-slate-800/40 border border-white/5 p-5 space-y-4">
+                            <div className="flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                              </svg>
+                              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Intake Checklist</div>
+                            </div>
+                            {accessories.length > 0 && (
+                              <div>
+                                <div className="text-xs text-slate-500 mb-2">Accessories Left Behind</div>
+                                <div className="flex flex-wrap gap-2">
+                                  {accessories.map((item) => (
+                                    <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-300">
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                      </svg>
+                                      {item}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {conditions.length > 0 && (
+                              <div>
+                                <div className="text-xs text-slate-500 mb-2">Physical Condition</div>
+                                <div className="flex flex-wrap gap-2">
+                                  {conditions.map((item) => (
+                                    <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-300">
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                      </svg>
+                                      {item}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="rounded-xl bg-slate-800/40 border border-white/5 p-5 transition hover:bg-slate-800/60">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Internal Notes</div>
+                          <div className="mt-3 whitespace-pre-wrap text-slate-400 italic leading-relaxed">
+                            {rawNotes || "No notes provided."}
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </section>
 
