@@ -147,6 +147,32 @@ body {
     padding-bottom: 18px;
   }
 
+  .receipt-header-right {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .receipt-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .receipt-qr svg {
+    display: block;
+  }
+
+  .receipt-qr-label {
+    font-size: 9px;
+    color: #6b7280;
+    text-align: center;
+    margin: 0;
+    white-space: nowrap;
+  }
+
   .receipt-header h1 {
     margin: 0;
     font-size: 28px;
