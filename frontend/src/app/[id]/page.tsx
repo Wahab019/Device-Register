@@ -11,6 +11,7 @@ import { deleteDevice, getDevice, resendTrackingEmail } from "../../lib/api";
 import toast from "react-hot-toast";
 import type { DeviceRecord } from "../../lib/types";
 import { STATUS_STYLES } from "../../lib/status";
+import { QRCodeSVG } from "qrcode.react";
 
 const CHECKLIST_SEPARATOR = "\n\n---intake-checklist---\n";
 
@@ -546,18 +547,32 @@ export default function DeviceDetailPage() {
     </main>
     <section className="print-only print-receipt">
       <header className="receipt-header">
-        <div>
+        <div className="receipt-header-left">
           <h1>Repair Receipt</h1>
           <p>Device Register</p>
         </div>
-        <div className="receipt-meta">
-          <p>Record ID</p>
-          <strong>{record.id}</strong>
+        <div className="receipt-header-right">
+          <div className="receipt-meta">
+            <p>Record ID</p>
+            <strong>{record.id}</strong>
+            {record.ticket_code && (
+              <>
+                <p style={{ marginTop: '4px' }}>Ticket Code</p>
+                <strong>{record.ticket_code}</strong>
+              </>
+            )}
+          </div>
           {record.ticket_code && (
-            <>
-              <p style={{ marginTop: '4px' }}>Ticket Code</p>
-              <strong>{record.ticket_code}</strong>
-            </>
+            <div className="receipt-qr">
+              <QRCodeSVG
+                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/track/${record.ticket_code}`}
+                size={96}
+                bgColor="#ffffff"
+                fgColor="#111827"
+                level="M"
+              />
+              <p className="receipt-qr-label">Scan to track repair</p>
+            </div>
           )}
         </div>
       </header>
@@ -612,10 +627,28 @@ export default function DeviceDetailPage() {
         <p>{record.issue_description}</p>
       </section>
 
-      <section className="receipt-section">
-        <h2>Notes</h2>
-        <p>{record.notes || "No notes provided."}</p>
-      </section>
+      {(() => {
+        const { rawNotes, accessories, conditions } = parseChecklist(record.notes);
+        return (
+          <>
+            {(accessories.length > 0 || conditions.length > 0) && (
+              <section className="receipt-section">
+                <h2>Intake Checklist</h2>
+                {accessories.length > 0 && (
+                  <p><strong>Accessories:</strong> {accessories.join(', ')}</p>
+                )}
+                {conditions.length > 0 && (
+                  <p><strong>Condition:</strong> {conditions.join(', ')}</p>
+                )}
+              </section>
+            )}
+            <section className="receipt-section">
+              <h2>Notes</h2>
+              <p>{rawNotes || "No notes provided."}</p>
+            </section>
+          </>
+        );
+      })()}
     </section>
     </>
   );
