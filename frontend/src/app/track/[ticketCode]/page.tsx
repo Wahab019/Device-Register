@@ -229,7 +229,8 @@ export default function TicketTrackingPage() {
               )}
             </section>
 
-            {/* Billing & Repair Charges Section */}
+            {/* Billing & Repair Charges Section — only visible once work has started */}
+            {record.status !== "pending" && (
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -281,6 +282,7 @@ export default function TicketTrackingPage() {
                 </div>
               )}
             </section>
+            )}
           </div>
         </div>
       </div>
