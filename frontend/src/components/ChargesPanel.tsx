@@ -7,6 +7,8 @@ import type { Charge } from "../lib/types";
 
 type ChargesPanelProps = {
   deviceId: string;
+  /** The current repair status. Charge management is only allowed when status is "in_progress". */
+  status: string;
 };
 
 function formatCurrency(amount: number) {
@@ -32,7 +34,8 @@ function formatNumberWithCommas(value: string) {
   return decPart !== undefined ? `${formattedInt}.${decPart}` : formattedInt;
 }
 
-export default function ChargesPanel({ deviceId }: ChargesPanelProps) {
+export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
+  const canEdit = status === "in_progress";
   const [charges, setCharges] = useState<Charge[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -127,6 +130,20 @@ export default function ChargesPanel({ deviceId }: ChargesPanelProps) {
         </div>
       </div>
 
+      {/* Locked state banner — shown whenever the repair is not actively in progress */}
+      {!canEdit && (
+        <div className="mb-4 flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-amber-300">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mt-0.5 shrink-0 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span>
+            Charges can only be added or removed when the repair status is{" "}
+            <strong className="text-amber-200">In Progress</strong>. Change the status first via{" "}
+            <em>Edit Record</em>.
+          </span>
+        </div>
+      )}
+
       {/* Charges List */}
       <div className="space-y-4">
         {loading ? (
@@ -169,9 +186,9 @@ export default function ChargesPanel({ deviceId }: ChargesPanelProps) {
                       <button
                         type="button"
                         onClick={() => handleDeleteCharge(charge.id)}
-                        disabled={deletingId === charge.id}
-                        className="inline-flex items-center justify-center text-xs text-red-400 hover:text-red-300 transition-colors p-1.5 rounded-lg hover:bg-red-500/10 disabled:opacity-50"
-                        title="Delete charge"
+                        disabled={!canEdit || deletingId === charge.id}
+                        className="inline-flex items-center justify-center text-xs text-red-400 hover:text-red-300 transition-colors p-1.5 rounded-lg hover:bg-red-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={canEdit ? "Delete charge" : "Change status to In Progress to manage charges"}
                       >
                         {deletingId === charge.id ? (
                           <span className="text-xs">...</span>
@@ -200,50 +217,52 @@ export default function ChargesPanel({ deviceId }: ChargesPanelProps) {
           </div>
         )}
 
-        {/* Add Charge Form */}
-        <form
-          onSubmit={handleAddCharge}
-          className="rounded-xl bg-slate-800/30 border border-white/5 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-end gap-3"
-        >
-          <div className="flex-1 space-y-1.5">
-            <label htmlFor="charge_desc" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Description
-            </label>
-            <input
-              id="charge_desc"
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Replacement screen, Diagnostics..."
-              className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm"
-              required
-            />
-          </div>
-
-          <div className="w-full sm:w-40 space-y-1.5">
-            <label htmlFor="charge_amount" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Amount (₦)
-            </label>
-            <input
-              id="charge_amount"
-              type="text"
-              inputMode="decimal"
-              value={amount}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setAmount(formatNumberWithCommas(e.target.value))}
-              placeholder="0.00"
-              className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm font-mono"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 disabled:opacity-50 shrink-0"
+        {/* Add Charge Form — only rendered when the repair is actively in progress */}
+        {canEdit && (
+          <form
+            onSubmit={handleAddCharge}
+            className="rounded-xl bg-slate-800/30 border border-white/5 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-end gap-3"
           >
-            {isSubmitting ? "Adding..." : "+ Add Charge"}
-          </button>
-        </form>
+            <div className="flex-1 space-y-1.5">
+              <label htmlFor="charge_desc" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Description
+              </label>
+              <input
+                id="charge_desc"
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="e.g. Replacement screen, Diagnostics..."
+                className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm"
+                required
+              />
+            </div>
+
+            <div className="w-full sm:w-40 space-y-1.5">
+              <label htmlFor="charge_amount" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Amount (₦)
+              </label>
+              <input
+                id="charge_amount"
+                type="text"
+                inputMode="decimal"
+                value={amount}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setAmount(formatNumberWithCommas(e.target.value))}
+                placeholder="0.00"
+                className="w-full rounded-xl glass-input px-3.5 py-2.5 text-sm font-mono"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 disabled:opacity-50 shrink-0"
+            >
+              {isSubmitting ? "Adding..." : "+ Add Charge"}
+            </button>
+          </form>
+        )}
       </div>
     </section>
   );
