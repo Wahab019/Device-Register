@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -7,11 +7,12 @@ import DeviceForm from "../../components/DeviceForm";
 import ChargesPanel from "../../components/ChargesPanel";
 import StaffHeader from "../../components/StaffHeader";
 import { useAuth } from "../../lib/auth-context";
-import { deleteDevice, getDevice, resendTrackingEmail } from "../../lib/api";
+import { deleteDevice, getDevice, getCharges, resendTrackingEmail } from "../../lib/api";
 import toast from "react-hot-toast";
 import type { DeviceRecord } from "../../lib/types";
 import { STATUS_STYLES } from "../../lib/status";
 import { QRCodeSVG } from "qrcode.react";
+import type { Charge } from "../../lib/types";
 
 const CHECKLIST_SEPARATOR = "\n\n---intake-checklist---\n";
 
@@ -79,6 +80,62 @@ function formatDeviceName(device: DeviceRecord) {
   return [device.device_type, device.device_brand, device.device_model]
     .filter(Boolean)
     .join(" ");
+}
+
+function formatReceiptCurrency(amount: number) {
+  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(amount);
+}
+
+// Fetches charges for the given device and renders a print-friendly table.
+// Lives in the same file so it shares the receipt's print CSS scope.
+function ChargesSummaryReceipt({ deviceId }: { deviceId: string }) {
+  const [charges, setCharges] = useState<Charge[]>([]);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    getCharges(deviceId)
+      .then((data) => {
+        setCharges(data.items || []);
+        setTotal(data.total || 0);
+      })
+      .catch(() => {
+        setCharges([]);
+        setTotal(0);
+      });
+  }, [deviceId]);
+
+  if (charges.length === 0) {
+    return <p style={{ color: '#6b7280', fontStyle: 'italic', margin: 0 }}>No charges recorded.</p>;
+  }
+
+  return (
+    <>
+      <table className="receipt-charges-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Date</th>
+            <th style={{ textAlign: 'right' }}>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {charges.map((c) => (
+            <tr key={c.id}>
+              <td>{c.description}</td>
+              <td>{new Date(c.created_at).toLocaleDateString()}</td>
+              <td style={{ textAlign: 'right', fontFamily: 'monospace' }}>{formatReceiptCurrency(c.amount)}</td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={2}><strong>Total</strong></td>
+            <td style={{ textAlign: 'right', fontFamily: 'monospace' }}><strong>{formatReceiptCurrency(total)}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    </>
+  );
 }
 
 // Loads the requested device record, updates the page state, and reports
@@ -340,8 +397,9 @@ export default function DeviceDetailPage() {
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  disabled={isDeleting}
-                  className="inline-flex items-center justify-center rounded-xl bg-blue-900/30 border border-blue-700/50 px-5 py-2.5 text-sm font-semibold text-blue-300 transition-all hover:bg-blue-900/50 hover:text-blue-200 hover:border-blue-600 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm"
+                  disabled={isDeleting || record.status !== "completed"}
+                  title={record.status !== "completed" ? "Receipt can only be printed when the repair is completed" : "Print receipt"}
+                  className="inline-flex items-center justify-center rounded-xl bg-blue-900/30 border border-blue-700/50 px-5 py-2.5 text-sm font-semibold text-blue-300 transition-all hover:bg-blue-900/50 hover:text-blue-200 hover:border-blue-600 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
                 >
                   Print Receipt
                 </button>
@@ -539,7 +597,7 @@ export default function DeviceDetailPage() {
                 </div>
               </section>
 
-              <ChargesPanel deviceId={record.id} />
+              <ChargesPanel deviceId={record.id} status={record.status} />
             </div>
           </div>
         </div>
@@ -649,6 +707,12 @@ export default function DeviceDetailPage() {
           </>
         );
       })()}
+
+      {/* Charges & Total — always included on receipt so the customer sees the full bill */}
+      <section className="receipt-section receipt-charges-section">
+        <h2>Repair Charges</h2>
+        <ChargesSummaryReceipt deviceId={record.id} />
+      </section>
     </section>
     </>
   );
