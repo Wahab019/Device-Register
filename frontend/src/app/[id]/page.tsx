@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -647,14 +647,14 @@ export default function DeviceDetailPage() {
             <dt>Name</dt>
             <dd>{record.customer_name}</dd>
           </div>
-          <div>
+          {/* <div>
             <dt>Phone</dt>
             <dd>{record.customer_phone}</dd>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <dt>Email</dt>
             <dd>{record.customer_email ?? "-"}</dd>
-          </div>
+          </div> */}
         </dl>
       </section>
 
@@ -680,7 +680,7 @@ export default function DeviceDetailPage() {
         </dl>
       </section>
 
-      <section className="receipt-section">
+      {/* <section className="receipt-section">
         <h2>Reported Issue</h2>
         <p>{record.issue_description}</p>
       </section>
@@ -706,7 +706,7 @@ export default function DeviceDetailPage() {
             </section>
           </>
         );
-      })()}
+      })()} */}
 
       {/* Charges & Total — always included on receipt so the customer sees the full bill */}
       <section className="receipt-section receipt-charges-section">
