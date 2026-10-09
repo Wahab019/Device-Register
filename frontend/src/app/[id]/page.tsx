@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import DeviceForm from "../../components/DeviceForm";
 import ChargesPanel from "../../components/ChargesPanel";
 import StaffHeader from "../../components/StaffHeader";
 import { useAuth } from "../../lib/auth-context";
-import { deleteDevice, getDevice, getCharges, resendTrackingEmail } from "../../lib/api";
+import { deleteDevice, getDevice, getCharges, resendTrackingEmail, patchDeviceStatus } from "../../lib/api";
 import toast from "react-hot-toast";
 import type { DeviceRecord } from "../../lib/types";
-import { STATUS_STYLES } from "../../lib/status";
+import { STATUS_STYLES, getValidNextStatuses } from "../../lib/status";
 import { QRCodeSVG } from "qrcode.react";
 import type { Charge } from "../../lib/types";
 
@@ -153,6 +153,9 @@ export default function DeviceDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [isStatusUpdating, setIsStatusUpdating] = useState(false);
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const statusMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -214,6 +217,40 @@ export default function DeviceDetailPage() {
     navigator.clipboard.writeText(url);
     toast.success("Tracking link copied to clipboard!");
   };
+
+  // Quick status update: sends a status-only PUT and refreshes state in-place
+  const handleStatusChange = async (newStatus: string, notify: boolean = true) => {
+    if (!id || !record) return;
+    try {
+      setIsStatusUpdating(true);
+      setShowStatusMenu(false);
+      const updated = await patchDeviceStatus(id, newStatus, notify);
+      setRecord(updated);
+      toast.success(`Status updated to "${STATUS_STYLES[updated.status as keyof typeof STATUS_STYLES]?.label ?? newStatus}"`);
+    } catch (err: unknown) {
+      const rawMsg = err instanceof Error ? err.message.replace(/Request failed with status \d+: /, "") : "Failed to update status";
+      try {
+        const parsed = JSON.parse(rawMsg);
+        toast.error(parsed.detail || rawMsg, { duration: 6000 });
+      } catch {
+        toast.error(rawMsg, { duration: 6000 });
+      }
+    } finally {
+      setIsStatusUpdating(false);
+    }
+  };
+
+  // Close the status menu when clicking outside
+  useEffect(() => {
+    if (!showStatusMenu) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (statusMenuRef.current && !statusMenuRef.current.contains(e.target as Node)) {
+        setShowStatusMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showStatusMenu]);
 
   // Reloads the record whenever the route ID changes.
   useEffect(() => {
@@ -394,6 +431,71 @@ export default function DeviceDetailPage() {
               </div>
 
               <div className="flex items-center gap-3">
+                {/* ── Quick Status Action Dropdown ────────────────────────── */}
+                {(() => {
+                  const nextStatuses = getValidNextStatuses(record.status as Parameters<typeof getValidNextStatuses>[0]);
+                  const isTerminal = nextStatuses.length === 0;
+                  return (
+                    <div className="relative" ref={statusMenuRef}>
+                      <button
+                        id="quick-status-btn"
+                        type="button"
+                        disabled={isDeleting || isStatusUpdating || isTerminal}
+                        onClick={() => setShowStatusMenu((prev) => !prev)}
+                        title={isTerminal ? `Status "${status.label}" is final and cannot be changed` : "Quick change status"}
+                        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-slate-800/90 hover:bg-slate-700/90 px-4 py-2.5 text-sm font-semibold text-slate-200 shadow-sm transition-all hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {isStatusUpdating ? (
+                          <span className="h-3.5 w-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <span className={`h-2.5 w-2.5 rounded-full ${STATUS_STYLES[record.status as keyof typeof STATUS_STYLES]?.dotClasses ?? "bg-slate-400"}`} />
+                        )}
+                        <span>{isStatusUpdating ? "Updating…" : status.label}</span>
+                        {!isTerminal && (
+                          <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-slate-400 transition-transform ${showStatusMenu ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+
+                      {showStatusMenu && (
+                        <div
+                          id="quick-status-menu"
+                          className="absolute right-0 top-full z-50 mt-2 w-60 rounded-xl border border-white/10 bg-slate-900 shadow-2xl shadow-black/80 overflow-hidden backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100"
+                        >
+                          <div className="px-3.5 py-2.5 border-b border-white/5 bg-slate-800/40">
+                            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Update Status</p>
+                          </div>
+                          <div className="p-1.5 space-y-0.5">
+                            {nextStatuses.map((s) => {
+                              const style = STATUS_STYLES[s as keyof typeof STATUS_STYLES];
+                              return (
+                                <button
+                                  key={s}
+                                  id={`status-option-${s}`}
+                                  type="button"
+                                  onClick={() => handleStatusChange(s, true)}
+                                  className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/80 transition-colors text-left"
+                                >
+                                  <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${style?.dotClasses ?? "bg-slate-400"}`} />
+                                  <span>{style?.label ?? s}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          {record.customer_email && (
+                            <div className="px-3 py-2 border-t border-white/5 bg-slate-950/40 flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                              <p className="text-[11px] text-slate-400">Customer will be notified by email</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
                 <button
                   type="button"
                   onClick={() => window.print()}
