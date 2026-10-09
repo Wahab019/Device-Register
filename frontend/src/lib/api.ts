@@ -109,6 +109,26 @@ export async function updateDevice(
   return response.json();
 }
 
+// Sends a minimal status-only PUT to update a device's status without
+// requiring a full form payload. The `notify_customer` flag controls
+// whether the backend emails the customer about the change.
+export async function patchDeviceStatus(
+  id: string,
+  status: string,
+  notifyCustomer: boolean = true,
+): Promise<DeviceRecord> {
+  const response = await fetch(`${API_URL}/devices/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...getStaffHeaders(),
+    },
+    body: JSON.stringify({ status, notify_customer: notifyCustomer }),
+  });
+  await handleResponse(response);
+  return response.json();
+}
+
 // Sends a DELETE request for the device identified by `id`
 export async function deleteDevice(id: string): Promise<void> {
   const response = await fetch(`${API_URL}/devices/${id}`, {
