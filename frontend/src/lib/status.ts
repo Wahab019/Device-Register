@@ -14,7 +14,7 @@ export const STATUS_MESSAGES: Record<DeviceStatus, string> = {
   in_progress: "We're working on your device.",
   awaiting_approval: "We need your approval before continuing. Please contact us.",
   ready_for_pickup: "Your device is ready. Bring your ticket ID to collect it.",
-  completed: "Your device has been handed back. Thank you.",
+  completed: "Your device has been handed back to you. Thank you for your patronage.",
   cancelled: "This repair has been closed. Please contact us for details.",
 };
 

@@ -13,6 +13,8 @@ type AuthContextType = {
   logout: () => void;
 };
 
+// Shared auth state for the staff app. Components can consume this without
+// manually passing user/session props through the component tree.
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -21,6 +23,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    // Restore the current staff session on first load by checking the saved token
+    // and fetching the authenticated user profile from the backend.
     const token = localStorage.getItem("staff_access_token");
     if (!token) {
       setLoading(false);
@@ -40,6 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
   }, []);
 
+  // Store the token immediately after a successful login or signup so the rest of
+  // the app can reuse the same session without a separate reload.
   const login = async (email: string, password: string) => {
     const res = await loginStaff({ email, password });
     localStorage.setItem("staff_access_token", res.access_token);
@@ -52,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(res.user);
   };
 
+  // Clear the session and redirect back to the sign-in screen.
   const logout = () => {
     localStorage.removeItem("staff_access_token");
     setUser(null);
@@ -68,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
+    // This hook should only be used from a component inside AuthProvider.
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
