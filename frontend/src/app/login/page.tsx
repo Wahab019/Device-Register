@@ -25,6 +25,7 @@ export default function LoginPage() {
     }
   }, [user, authLoading, router]);
 
+  // Both modes use the same form; registration additionally requires the invite code.
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -41,7 +42,7 @@ export default function LoginPage() {
       router.push("/");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Authentication failed";
-      // Clean up common error messages
+      // Translate common API errors into messages that are clearer to staff.
       if (message.includes("Invalid login credentials") || message.includes("401")) {
         setError("Invalid email or password. Please try again.");
       } else if (message.includes("already exists") || message.includes("409")) {
