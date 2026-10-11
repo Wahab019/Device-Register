@@ -11,12 +11,14 @@ export default function NewDevicePage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
+  // Keep this page behind the staff login and wait for session restoration first.
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
     }
   }, [user, authLoading, router]);
 
+  // Avoid briefly showing the form while authentication is still being checked.
   if (authLoading || !user) {
     return (
       <main className="min-h-screen px-4 py-16 flex items-center justify-center">
@@ -43,6 +45,7 @@ export default function NewDevicePage() {
             Add New Device Record
           </h1>
 
+          {/* DeviceForm handles the record fields and submission flow. */}
           <div className="relative z-10">
             <DeviceForm />
           </div>
