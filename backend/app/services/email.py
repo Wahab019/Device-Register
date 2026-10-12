@@ -179,6 +179,11 @@ def send_smtp_email(to_email: str, subject: str, html: str, text: str) -> tuple[
 
         logger.info("Email successfully sent to %s via SMTP.", to_email)
         return True, f"Email sent successfully to {to_email}"
+    except smtplib.SMTPAuthenticationError as e:
+        detail = e.smtp_error.decode(errors="ignore") if isinstance(e.smtp_error, bytes) else str(e)
+        err_msg = f"Gmail authentication failed: {detail}. Please check your Gmail address and App Password."
+        logger.error(err_msg)
+        return False, err_msg
     except Exception as e:
         err_msg = f"Failed to send email to {to_email}: {str(e)}"
         logger.exception(err_msg)
