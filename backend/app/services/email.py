@@ -1,9 +1,11 @@
 import logging
 import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from typing import Optional
 
 from dotenv import load_dotenv
-import httpx
 
 from app.db import supabase
 from app.models import EMAIL_NOTIFIABLE_STATUSES, STATUS_LABELS
@@ -132,43 +134,56 @@ Track the status of your repair here:
     return subject, html, text
 
 
-def send_resend_email(to_email: str, subject: str, html: str, text: str) -> tuple[bool, str]:
-    load_dotenv(override=True)
-    api_key = os.getenv("RESEND_API_KEY")
-    from_email = os.getenv("EMAIL_FROM", "Device Register <onboarding@resend.dev>")
+def send_smtp_email(to_email: str, subject: str, html: str, text: str) -> tuple[bool, str]:
+    load_dotenv()
+    smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    smtp_port_raw = os.getenv("SMTP_PORT", "587")
+    try:
+        smtp_port = int(smtp_port_raw)
+    except ValueError:
+        smtp_port = 587
 
-    if not api_key:
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+    from_email = os.getenv("EMAIL_FROM") or (f"Device Register <{smtp_user}>" if smtp_user else "Device Register")
+
+    if not smtp_user or not smtp_password:
         msg = (
-            "RESEND_API_KEY is not configured in backend/.env. "
-            "Emails cannot be delivered until a valid Resend API key is added."
+            "SMTP_USER and/or SMTP_PASSWORD are not configured in backend/.env. "
+            "Emails cannot be delivered until valid SMTP credentials are added."
         )
         logger.warning(msg)
         return False, msg
 
     try:
-        response = httpx.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "from": from_email,
-                "to": [to_email],
-                "subject": subject,
-                "html": html,
-                "text": text,
-            },
-            timeout=10.0,
-        )
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = from_email
+        msg["To"] = to_email
 
-        if response.status_code in (200, 201):
-            logger.info("Email successfully sent to %s via Resend.", to_email)
-            return True, f"Email sent successfully to {to_email}"
+        part1 = MIMEText(text, "plain", "utf-8")
+        part2 = MIMEText(html, "html", "utf-8")
+        msg.attach(part1)
+        msg.attach(part2)
+
+        cleaned_password = smtp_password.replace(" ", "")
+        if smtp_port == 465:
+            with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10.0) as server:
+                server.login(smtp_user, cleaned_password)
+                server.sendmail(smtp_user, [to_email], msg.as_string())
         else:
-            err_msg = f"Resend API returned status {response.status_code}: {response.text}"
-            logger.error(err_msg)
-            return False, err_msg
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=10.0) as server:
+                server.starttls()
+                server.login(smtp_user, cleaned_password)
+                server.sendmail(smtp_user, [to_email], msg.as_string())
+
+        logger.info("Email successfully sent to %s via SMTP.", to_email)
+        return True, f"Email sent successfully to {to_email}"
+    except smtplib.SMTPAuthenticationError as e:
+        detail = e.smtp_error.decode(errors="ignore") if isinstance(e.smtp_error, bytes) else str(e)
+        err_msg = f"Gmail authentication failed: {detail}. Please check your Gmail address and App Password."
+        logger.error(err_msg)
+        return False, err_msg
     except Exception as e:
         err_msg = f"Failed to send email to {to_email}: {str(e)}"
         logger.exception(err_msg)
@@ -213,7 +228,7 @@ def send_status_change_email_background(
         total_charges=total_charges,
     )
 
-    success, err_msg = send_resend_email(to_email, subject, html, text)
+    success, err_msg = send_smtp_email(to_email, subject, html, text)
     if success:
         if history_id and supabase is not None:
             try:
@@ -281,4 +296,4 @@ def send_device_tracking_email(device_id: str) -> tuple[bool, str]:
         total_charges=total_charges,
     )
 
-    return send_resend_email(customer_email, subject, html, text)
+    return send_smtp_email(customer_email, subject, html, text)
