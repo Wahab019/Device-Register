@@ -47,7 +47,7 @@ class TestEmailTemplates(unittest.TestCase):
         self.assertIn("Your repair has been closed. Please contact us for details.", html)
         self.assertIn("Your repair has been closed. Please contact us for details.", text)
 
-    @patch("app.services.email.send_resend_email")
+    @patch("app.services.email.send_smtp_email")
     def test_in_progress_skips_email(self, mock_send):
         send_status_change_email_background(
             history_id="hist-1",
@@ -58,6 +58,52 @@ class TestEmailTemplates(unittest.TestCase):
         )
         mock_send.assert_not_called()
 
+    def test_send_smtp_missing_credentials(self):
+        from app.services.email import send_smtp_email
+        with patch.dict("os.environ", {"SMTP_USER": "", "SMTP_PASSWORD": ""}):
+            success, msg = send_smtp_email("test@example.com", "Subject", "<p>Test</p>", "Test")
+            self.assertFalse(success)
+            self.assertIn("not configured", msg)
+
+    @patch("smtplib.SMTP")
+    def test_send_smtp_success(self, mock_smtp):
+        from app.services.email import send_smtp_email
+        instance = MagicMock()
+        mock_smtp.return_value.__enter__.return_value = instance
+
+        with patch.dict("os.environ", {
+            "SMTP_HOST": "smtp.gmail.com",
+            "SMTP_PORT": "587",
+            "SMTP_USER": "testuser@gmail.com",
+            "SMTP_PASSWORD": "secretpassword",
+            "EMAIL_FROM": "Device Register <testuser@gmail.com>",
+        }):
+            success, msg = send_smtp_email("recipient@example.com", "Subject", "<p>Test</p>", "Test")
+            self.assertTrue(success)
+            instance.starttls.assert_called_once()
+            instance.login.assert_called_once_with("testuser@gmail.com", "secretpassword")
+            instance.sendmail.assert_called_once()
+
+    @patch("smtplib.SMTP_SSL")
+    def test_send_smtp_ssl_success(self, mock_smtp_ssl):
+        from app.services.email import send_smtp_email
+        instance = MagicMock()
+        mock_smtp_ssl.return_value.__enter__.return_value = instance
+
+        with patch.dict("os.environ", {
+            "SMTP_HOST": "smtp.gmail.com",
+            "SMTP_PORT": "465",
+            "SMTP_USER": "testuser@gmail.com",
+            "SMTP_PASSWORD": "secretpassword",
+            "EMAIL_FROM": "Device Register <testuser@gmail.com>",
+        }):
+            success, msg = send_smtp_email("recipient@example.com", "Subject", "<p>Test</p>", "Test")
+            self.assertTrue(success)
+            instance.login.assert_called_once_with("testuser@gmail.com", "secretpassword")
+            instance.sendmail.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()
+
+
