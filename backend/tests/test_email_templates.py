@@ -47,8 +47,14 @@ class TestEmailTemplates(unittest.TestCase):
         self.assertIn("Your repair has been closed. Please contact us for details.", html)
         self.assertIn("Your repair has been closed. Please contact us for details.", text)
 
+    def test_in_progress_template(self):
+        subject, html, text = build_status_email("DR-PROG", "iPad Pro", "in_progress")
+        self.assertIn("working on your device", html)
+        self.assertIn("working on your device", text)
+
     @patch("app.services.email.send_smtp_email")
-    def test_in_progress_skips_email(self, mock_send):
+    def test_in_progress_sends_email(self, mock_send):
+        mock_send.return_value = (True, "OK")
         send_status_change_email_background(
             history_id="hist-1",
             to_email="customer@example.com",
@@ -56,7 +62,7 @@ class TestEmailTemplates(unittest.TestCase):
             device_name="Laptop",
             new_status="in_progress",
         )
-        mock_send.assert_not_called()
+        mock_send.assert_called_once()
 
     def test_send_smtp_missing_credentials(self):
         from app.services.email import send_smtp_email

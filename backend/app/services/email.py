@@ -1,6 +1,8 @@
 import logging
 import os
 import smtplib
+import socket
+import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Optional
@@ -18,6 +20,11 @@ EMAIL_TEMPLATES: dict[str, dict[str, str]] = {
         "subject": "We've received your device ({ticket_code})",
         "headline": "Device Received for Service",
         "message": "We've received your device and will start soon.",
+    },
+    "in_progress": {
+        "subject": "We're working on your device ({ticket_code})",
+        "headline": "Repair In Progress",
+        "message": "We're currently working on your device.",
     },
     "awaiting_approval": {
         "subject": "Action Required: Approval Needed for Your Repair ({ticket_code})",
@@ -155,39 +162,58 @@ def send_smtp_email(to_email: str, subject: str, html: str, text: str) -> tuple[
         logger.warning(msg)
         return False, msg
 
-    try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = from_email
-        msg["To"] = to_email
+    clean_to_email = to_email.strip()
+    cleaned_password = smtp_password.replace(" ", "")
+    max_retries = 3
+    last_err = ""
 
-        part1 = MIMEText(text, "plain", "utf-8")
-        part2 = MIMEText(html, "html", "utf-8")
-        msg.attach(part1)
-        msg.attach(part2)
+    for attempt in range(1, max_retries + 1):
+        try:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = subject
+            msg["From"] = from_email
+            msg["To"] = clean_to_email
 
-        cleaned_password = smtp_password.replace(" ", "")
-        if smtp_port == 465:
-            with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10.0) as server:
-                server.login(smtp_user, cleaned_password)
-                server.sendmail(smtp_user, [to_email], msg.as_string())
-        else:
-            with smtplib.SMTP(smtp_host, smtp_port, timeout=10.0) as server:
-                server.starttls()
-                server.login(smtp_user, cleaned_password)
-                server.sendmail(smtp_user, [to_email], msg.as_string())
+            part1 = MIMEText(text, "plain", "utf-8")
+            part2 = MIMEText(html, "html", "utf-8")
+            msg.attach(part1)
+            msg.attach(part2)
 
-        logger.info("Email successfully sent to %s via SMTP.", to_email)
-        return True, f"Email sent successfully to {to_email}"
-    except smtplib.SMTPAuthenticationError as e:
-        detail = e.smtp_error.decode(errors="ignore") if isinstance(e.smtp_error, bytes) else str(e)
-        err_msg = f"Gmail authentication failed: {detail}. Please check your Gmail address and App Password."
-        logger.error(err_msg)
-        return False, err_msg
-    except Exception as e:
-        err_msg = f"Failed to send email to {to_email}: {str(e)}"
-        logger.exception(err_msg)
-        return False, err_msg
+            # Use 30.0s timeout to allow for network latency during TLS/SMTP handshakes
+            if smtp_port == 465:
+                with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=30.0) as server:
+                    server.login(smtp_user, cleaned_password)
+                    server.sendmail(smtp_user, [clean_to_email], msg.as_string())
+            else:
+                with smtplib.SMTP(smtp_host, smtp_port, timeout=30.0) as server:
+                    server.starttls()
+                    server.login(smtp_user, cleaned_password)
+                    server.sendmail(smtp_user, [clean_to_email], msg.as_string())
+
+            logger.info("Email successfully sent to %s via SMTP on attempt %d.", clean_to_email, attempt)
+            return True, f"Email sent successfully to {clean_to_email}"
+
+        except smtplib.SMTPAuthenticationError as e:
+            detail = e.smtp_error.decode(errors="ignore") if isinstance(e.smtp_error, bytes) else str(e)
+            err_msg = f"Gmail authentication failed: {detail}. Please check your Gmail address and App Password."
+            logger.error(err_msg)
+            return False, err_msg
+        except (smtplib.SMTPServerDisconnected, TimeoutError, socket.timeout, smtplib.SMTPConnectError, ConnectionError) as e:
+            last_err = str(e)
+            logger.warning("SMTP network error sending to %s (attempt %d/%d): %s", clean_to_email, attempt, max_retries, e)
+            if attempt < max_retries:
+                time.sleep(1.0 * attempt)
+                continue
+        except Exception as e:
+            last_err = str(e)
+            logger.exception("Failed to send email to %s on attempt %d: %s", clean_to_email, attempt, e)
+            if attempt < max_retries:
+                time.sleep(1.0 * attempt)
+                continue
+
+    err_msg = f"Failed to send email to {clean_to_email} after {max_retries} attempts: {last_err}"
+    logger.error(err_msg)
+    return False, err_msg
 
 
 def send_status_change_email_background(
@@ -198,8 +224,6 @@ def send_status_change_email_background(
     new_status: str,
     device_id: Optional[str] = None,
 ) -> None:
-    # Customer emails are sent ONLY for: pending, awaiting_approval, ready_for_pickup, completed, cancelled
-    # Do NOT email for in_progress
     if new_status not in EMAIL_NOTIFIABLE_STATUSES:
         logger.info("Status '%s' does not trigger customer email; skipping.", new_status)
         return

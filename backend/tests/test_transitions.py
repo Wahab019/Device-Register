@@ -33,7 +33,7 @@ class TestStatusWorkflowTransitions(unittest.TestCase):
         self.assertIn("ready_for_pickup", EMAIL_NOTIFIABLE_STATUSES)
         self.assertIn("completed", EMAIL_NOTIFIABLE_STATUSES)
         self.assertIn("cancelled", EMAIL_NOTIFIABLE_STATUSES)
-        self.assertNotIn("in_progress", EMAIL_NOTIFIABLE_STATUSES)
+        self.assertIn("in_progress", EMAIL_NOTIFIABLE_STATUSES)
 
     def test_valid_transitions_pass(self):
         valid_pairs = [

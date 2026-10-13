@@ -29,6 +29,7 @@ export const STATUS_TRANSITIONS: Record<DeviceStatus, DeviceStatus[]> = {
 
 export const EMAIL_NOTIFIABLE_STATUSES: DeviceStatus[] = [
   "pending",
+  "in_progress",
   "awaiting_approval",
   "ready_for_pickup",
   "completed",
