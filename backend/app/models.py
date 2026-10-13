@@ -44,6 +44,7 @@ STATUS_MESSAGES: dict[str, str] = {
 # Customer notification policy: statuses that trigger customer emails
 EMAIL_NOTIFIABLE_STATUSES: set[str] = {
     "pending",
+    "in_progress",
     "awaiting_approval",
     "ready_for_pickup",
     "completed",
