@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -266,7 +266,7 @@ export default function DeviceDetailPage() {
   if (authLoading || !user) {
     return (
       <main className="min-h-screen px-4 py-16 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-[#997E67]/30 border-t-[#FFDBBB] rounded-full animate-spin"></div>
       </main>
     );
   }
@@ -276,8 +276,8 @@ export default function DeviceDetailPage() {
     // details from a previous route while the new record is being fetched.
     return (
       <main className="min-h-screen px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl glass-panel p-10 flex flex-col items-center justify-center text-slate-400">
-          <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+        <div className="mx-auto max-w-4xl glass-panel p-10 flex flex-col items-center justify-center text-[#CCBEB1]">
+          <div className="w-10 h-10 border-4 border-[#997E67]/30 border-t-[#FFDBBB] rounded-full animate-spin mb-4"></div>
           <p className="animate-pulse">Loading device details...</p>
         </div>
       </main>
@@ -293,7 +293,7 @@ export default function DeviceDetailPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10">
           <Link
             href="/"
-            className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
+            className="group mb-8 inline-flex items-center text-sm font-medium text-[#CCBEB1]/70 transition hover:text-[#FFDBBB]"
           >
             <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span> Back to records
           </Link>
@@ -325,14 +325,14 @@ export default function DeviceDetailPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10">
           <Link
             href="/"
-            className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
+            className="group mb-8 inline-flex items-center text-sm font-medium text-[#CCBEB1]/70 transition hover:text-[#FFDBBB]"
           >
             <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span> Back to records
           </Link>
 
           <div className="glass-panel p-8 sm:p-10 relative">
             <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
-            <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 drop-shadow-sm">
+            <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-[#FFDBBB] via-[#CCBEB1] to-[#997E67] drop-shadow-sm">
               Edit Device Record
             </h1>
             <div className="relative z-10">
@@ -362,7 +362,7 @@ export default function DeviceDetailPage() {
       <div className="mx-auto max-w-4xl relative z-10">
         <Link
           href="/"
-          className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
+          className="group mb-8 inline-flex items-center text-sm font-medium text-[#CCBEB1]/70 transition hover:text-[#FFDBBB]"
         >
           <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span> Back to records
         </Link>
@@ -373,60 +373,13 @@ export default function DeviceDetailPage() {
           <div className="relative z-10">
             <div className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#FFDBBB] mb-2">
                   Device Details
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-3xl font-bold text-slate-100 drop-shadow-sm">
+                  <h1 className="text-3xl font-bold text-[#F5EBE1] drop-shadow-sm">
                     {record.customer_name}
                   </h1>
-                  {/* {record.ticket_code && (
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Link
-                        href={`/track/${record.ticket_code}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-mono text-xs font-semibold text-blue-400 bg-blue-950/60 border border-blue-800/60 px-3 py-1 rounded-full hover:bg-blue-900/60 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
-                        title="Open Public Tracking Page"
-                      >
-                        <span>{record.ticket_code}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </Link>
-
-                      <button
-                        type="button"
-                        onClick={handleCopyTrackingLink}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700 border border-slate-700 px-3 py-1 text-xs text-slate-300 hover:text-white transition-colors"
-                        title="Copy tracking URL to clipboard"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                        Copy Link
-                      </button>
-
-                      {record.customer_email && (
-                        <button
-                          type="button"
-                          onClick={handleResendEmail}
-                          disabled={isSendingEmail}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-blue-950/60 hover:bg-blue-900/60 border border-blue-700/50 px-3 py-1 text-xs text-blue-300 hover:text-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title={`Send tracking email to ${record.customer_email}`}
-                        >
-                          {isSendingEmail ? (
-                            <span className="h-3 w-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></span>
-                          ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                          )}
-                          {isSendingEmail ? "Sending..." : "Email Customer Link"}
-                        </button>
-                      )}
-                    </div>
-                  )} */}
                 </div>
               </div>
 
@@ -443,16 +396,16 @@ export default function DeviceDetailPage() {
                         disabled={isDeleting || isStatusUpdating || isTerminal}
                         onClick={() => setShowStatusMenu((prev) => !prev)}
                         title={isTerminal ? `Status "${status.label}" is final and cannot be changed` : "Quick change status"}
-                        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-slate-800/90 hover:bg-slate-700/90 px-4 py-2.5 text-sm font-semibold text-slate-200 shadow-sm transition-all hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex items-center gap-2 rounded-xl border border-[#997E67]/40 bg-[#664930]/30 hover:bg-[#664930]/50 px-4 py-2.5 text-sm font-semibold text-[#F5EBE1] shadow-sm transition-all hover:border-[#997E67] disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {isStatusUpdating ? (
-                          <span className="h-3.5 w-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                          <span className="h-3.5 w-3.5 border-2 border-[#CCBEB1] border-t-transparent rounded-full animate-spin" />
                         ) : (
-                          <span className={`h-2.5 w-2.5 rounded-full ${STATUS_STYLES[record.status as keyof typeof STATUS_STYLES]?.dotClasses ?? "bg-slate-400"}`} />
+                          <span className={`h-2.5 w-2.5 rounded-full ${STATUS_STYLES[record.status as keyof typeof STATUS_STYLES]?.dotClasses ?? "bg-[#997E67]"}`} />
                         )}
                         <span>{isStatusUpdating ? "Updating…" : status.label}</span>
                         {!isTerminal && (
-                          <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-slate-400 transition-transform ${showStatusMenu ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-[#CCBEB1] transition-transform ${showStatusMenu ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                           </svg>
                         )}
@@ -461,10 +414,10 @@ export default function DeviceDetailPage() {
                       {showStatusMenu && (
                         <div
                           id="quick-status-menu"
-                          className="absolute right-0 top-full z-50 mt-2 w-60 rounded-xl border border-white/10 bg-slate-900 shadow-2xl shadow-black/80 overflow-hidden backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100"
+                          className="absolute right-0 top-full z-50 mt-2 w-60 rounded-xl border border-[#997E67]/40 bg-[#160F0A]/95 shadow-2xl shadow-black/90 overflow-hidden backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100"
                         >
-                          <div className="px-3.5 py-2.5 border-b border-white/5 bg-slate-800/40">
-                            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Update Status</p>
+                          <div className="px-3.5 py-2.5 border-b border-[#997E67]/20 bg-[#664930]/25">
+                            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Update Status</p>
                           </div>
                           <div className="p-1.5 space-y-0.5">
                             {nextStatuses.map((s) => {
@@ -475,20 +428,20 @@ export default function DeviceDetailPage() {
                                   id={`status-option-${s}`}
                                   type="button"
                                   onClick={() => handleStatusChange(s, true)}
-                                  className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-slate-200 hover:text-white hover:bg-slate-800/80 transition-colors text-left"
+                                  className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-[#CCBEB1] hover:text-[#F5EBE1] hover:bg-[#664930]/40 transition-colors text-left"
                                 >
-                                  <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${style?.dotClasses ?? "bg-slate-400"}`} />
+                                  <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${style?.dotClasses ?? "bg-[#997E67]"}`} />
                                   <span>{style?.label ?? s}</span>
                                 </button>
                               );
                             })}
                           </div>
                           {record.customer_email && (
-                            <div className="px-3 py-2 border-t border-white/5 bg-slate-950/40 flex items-center gap-2">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="px-3 py-2 border-t border-[#997E67]/20 bg-[#664930]/15 flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-[#FFDBBB] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                               </svg>
-                              <p className="text-[11px] text-slate-400">Customer will be notified by email</p>
+                              <p className="text-[11px] text-[#CCBEB1]/70">Customer will be notified by email</p>
                             </div>
                           )}
                         </div>
@@ -501,7 +454,7 @@ export default function DeviceDetailPage() {
                   onClick={() => window.print()}
                   disabled={isDeleting || record.status !== "completed"}
                   title={record.status !== "completed" ? "Receipt can only be printed when the repair is completed" : "Print receipt"}
-                  className="inline-flex items-center justify-center rounded-xl bg-blue-900/30 border border-blue-700/50 px-5 py-2.5 text-sm font-semibold text-blue-300 transition-all hover:bg-blue-900/50 hover:text-blue-200 hover:border-blue-600 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
+                  className="inline-flex items-center justify-center rounded-xl bg-[#664930]/30 border border-[#997E67]/40 px-5 py-2.5 text-sm font-semibold text-[#CCBEB1] transition-all hover:bg-[#664930]/60 hover:text-[#FFDBBB] hover:border-[#997E67] disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
                 >
                   Print Receipt
                 </button>
@@ -510,7 +463,7 @@ export default function DeviceDetailPage() {
                   type="button"
                   onClick={() => setIsEditing(true)}
                   disabled={isDeleting}
-                  className="inline-flex items-center justify-center rounded-xl bg-slate-800 border border-slate-700 px-5 py-2.5 text-sm font-semibold text-slate-300 transition-all hover:bg-slate-700 hover:text-white hover:border-slate-600 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm"
+                  className="inline-flex items-center justify-center rounded-xl bg-[#FFDBBB] border border-[#FFDBBB]/40 px-5 py-2.5 text-sm font-semibold text-[#2D1B0E] transition-all hover:bg-[#ffe7d1] hover:shadow-[0_0_20px_rgba(255,219,187,0.3)] disabled:cursor-not-allowed disabled:opacity-60 shadow-sm"
                 >
                   Edit Record
                 </button>
@@ -519,7 +472,7 @@ export default function DeviceDetailPage() {
                   type="button"
                   onClick={() => setShowDeleteConfirm(true)}
                   disabled={isDeleting}
-                  className="inline-flex items-center justify-center rounded-xl bg-red-900/30 border border-red-700/50 px-5 py-2.5 text-sm font-semibold text-red-400 transition-all hover:bg-red-900/50 hover:text-red-300 hover:border-red-600 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm"
+                  className="inline-flex items-center justify-center rounded-xl bg-red-950/30 border border-red-800/50 px-5 py-2.5 text-sm font-semibold text-red-400 transition-all hover:bg-red-900/40 hover:text-red-300 hover:border-red-600 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm"
                 >
                   Delete
                 </button>
@@ -572,22 +525,22 @@ export default function DeviceDetailPage() {
 
             <div className="space-y-10">
               <section>
-                <h2 className="mb-5 text-xl font-semibold text-slate-200 border-b border-white/5 pb-2">Customer Information</h2>
+                <h2 className="mb-5 text-xl font-semibold text-[#F5EBE1] border-b border-[#997E67]/20 pb-2">Customer Information</h2>
                 <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Name</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.customer_name}</div>
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Name</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium">{record.customer_name}</div>
                   </div>
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Phone</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.customer_phone}</div>
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Phone</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium">{record.customer_phone}</div>
                   </div>
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Email</div>
-                    <div className="mt-1.5 text-slate-200 font-medium wrap-break-word">{record.customer_email ?? "N/A"}</div>
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Email</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium wrap-break-word">{record.customer_email ?? "N/A"}</div>
                   </div>
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Status</div>
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70 mb-1.5">Status</div>
                     <div>
                       <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium border shadow-sm ${status.classes}`}>
                         {status.label}
@@ -598,33 +551,33 @@ export default function DeviceDetailPage() {
               </section>
 
               <section>
-                <h2 className="mb-5 text-xl font-semibold text-slate-200 border-b border-white/5 pb-2">Device Information</h2>
+                <h2 className="mb-5 text-xl font-semibold text-[#F5EBE1] border-b border-[#997E67]/20 pb-2">Device Information</h2>
                 <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Device Type</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.device_type}</div>
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Device Type</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium">{record.device_type}</div>
                   </div>
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Brand</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.device_brand ?? "N/A"}</div>
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Brand</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium">{record.device_brand ?? "N/A"}</div>
                   </div>
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Model</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.device_model ?? "N/A"}</div>
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Model</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium">{record.device_model ?? "N/A"}</div>
                   </div>
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Serial Number</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">{record.serial_number ?? "N/A"}</div>
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Serial Number</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium">{record.serial_number ?? "N/A"}</div>
                   </div>
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Date Received</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Date Received</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium">
                       {new Date(record.date_received).toLocaleDateString()}
                     </div>
                   </div>
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-4 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Date Completed</div>
-                    <div className="mt-1.5 text-slate-200 font-medium">
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-4 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Date Completed</div>
+                    <div className="mt-1.5 text-[#F5EBE1] font-medium">
                       {record.date_completed ? new Date(record.date_completed).toLocaleDateString() : "N/A"}
                     </div>
                   </div>
@@ -632,11 +585,11 @@ export default function DeviceDetailPage() {
               </section>
 
               <section>
-                <h2 className="mb-5 text-xl font-semibold text-slate-200 border-b border-white/5 pb-2">Issue &amp; Notes</h2>
+                <h2 className="mb-5 text-xl font-semibold text-[#F5EBE1] border-b border-[#997E67]/20 pb-2">Issue &amp; Notes</h2>
                 <div className="space-y-4">
-                  <div className="rounded-xl bg-slate-800/40 border border-white/5 p-5 transition hover:bg-slate-800/60">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Reported Issue</div>
-                    <div className="mt-3 whitespace-pre-wrap text-slate-300 leading-relaxed">
+                  <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-5 transition hover:bg-[#664930]/25">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Reported Issue</div>
+                    <div className="mt-3 whitespace-pre-wrap text-[#CCBEB1] leading-relaxed">
                       {record.issue_description}
                     </div>
                   </div>
@@ -647,19 +600,19 @@ export default function DeviceDetailPage() {
                     return (
                       <>
                         {hasChecklist && (
-                          <div className="rounded-xl bg-slate-800/40 border border-white/5 p-5 space-y-4">
+                          <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-5 space-y-4">
                             <div className="flex items-center gap-2">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#FFDBBB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                               </svg>
-                              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Intake Checklist</div>
+                              <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Intake Checklist</div>
                             </div>
                             {accessories.length > 0 && (
                               <div>
-                                <div className="text-xs text-slate-500 mb-2">Accessories Left Behind</div>
+                                <div className="text-xs text-[#CCBEB1]/70 mb-2">Accessories Left Behind</div>
                                 <div className="flex flex-wrap gap-2">
                                   {accessories.map((item) => (
-                                    <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-300">
+                                    <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-[#FFDBBB]/40 bg-[#FFDBBB]/10 px-3 py-1 text-xs font-medium text-[#FFDBBB]">
                                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                       </svg>
@@ -671,10 +624,10 @@ export default function DeviceDetailPage() {
                             )}
                             {conditions.length > 0 && (
                               <div>
-                                <div className="text-xs text-slate-500 mb-2">Physical Condition</div>
+                                <div className="text-xs text-[#CCBEB1]/70 mb-2">Physical Condition</div>
                                 <div className="flex flex-wrap gap-2">
                                   {conditions.map((item) => (
-                                    <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-300">
+                                    <span key={item} className="inline-flex items-center gap-1.5 rounded-full border border-[#997E67]/50 bg-[#664930]/30 px-3 py-1 text-xs font-medium text-[#CCBEB1]">
                                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                       </svg>
@@ -687,9 +640,9 @@ export default function DeviceDetailPage() {
                           </div>
                         )}
 
-                        <div className="rounded-xl bg-slate-800/40 border border-white/5 p-5 transition hover:bg-slate-800/60">
-                          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">Internal Notes</div>
-                          <div className="mt-3 whitespace-pre-wrap text-slate-400 italic leading-relaxed">
+                        <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-5 transition hover:bg-[#664930]/25">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70">Internal Notes</div>
+                          <div className="mt-3 whitespace-pre-wrap text-[#CCBEB1]/70 italic leading-relaxed">
                             {rawNotes || "No notes provided."}
                           </div>
                         </div>
