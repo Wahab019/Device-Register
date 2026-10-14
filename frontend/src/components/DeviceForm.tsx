@@ -236,7 +236,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="customer_name" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="customer_name" className="block text-sm font-medium text-[#CCBEB1]">
             Customer Name
           </label>
           <input
@@ -251,7 +251,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="customer_phone" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="customer_phone" className="block text-sm font-medium text-[#CCBEB1]">
             Customer Phone
           </label>
           <input
@@ -274,10 +274,10 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
 
         <div className="space-y-2 md:col-span-1">
           <div className="flex items-center justify-between">
-            <label htmlFor="customer_email" className="block text-sm font-medium text-slate-300">
+            <label htmlFor="customer_email" className="block text-sm font-medium text-[#CCBEB1]">
               Customer Email
             </label>
-            <span className="text-xs text-blue-400/80">Optional — sends tracking link</span>
+            <span className="text-xs text-[#FFDBBB]/80">Optional — sends tracking link</span>
           </div>
           <input
             id="customer_email"
@@ -290,7 +290,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="device_type" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="device_type" className="block text-sm font-medium text-[#CCBEB1]">
             Device Type
           </label>
           <input
@@ -305,7 +305,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="device_brand" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="device_brand" className="block text-sm font-medium text-[#CCBEB1]">
             Device Brand
           </label>
           <input
@@ -319,7 +319,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="device_model" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="device_model" className="block text-sm font-medium text-[#CCBEB1]">
             Device Model
           </label>
           <input
@@ -333,7 +333,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="serial_number" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="serial_number" className="block text-sm font-medium text-[#CCBEB1]">
             Serial Number
           </label>
           <input
@@ -347,7 +347,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <label htmlFor="date_received" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="date_received" className="block text-sm font-medium text-[#CCBEB1]">
             Date Received
           </label>
           <input
@@ -364,7 +364,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         {initialData && (
           <>
             <div className="space-y-2 md:col-span-1">
-              <label htmlFor="status" className="block text-sm font-medium text-slate-300">
+              <label htmlFor="status" className="block text-sm font-medium text-[#CCBEB1]">
                 Status
               </label>
               <select
@@ -379,17 +379,17 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
                 }
                 className="w-full rounded-xl glass-input px-4 py-3 text-sm appearance-none disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <option value={initialData.status} className="bg-slate-800">
+                <option value={initialData.status} className="bg-[#1C130D] text-[#F5EBE1]">
                   {STATUS_LABELS[initialData.status]} (Current)
                 </option>
                 {validNextStatuses.map((nextStatus) => (
-                  <option key={nextStatus} value={nextStatus} className="bg-slate-800">
+                  <option key={nextStatus} value={nextStatus} className="bg-[#1C130D] text-[#F5EBE1]">
                     {STATUS_LABELS[nextStatus]}
                   </option>
                 ))}
               </select>
               {isTerminal && (
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-[#CCBEB1]/70 mt-1">
                   This repair is in a final state ({STATUS_LABELS[initialData.status]}) and cannot be transitioned further.
                 </p>
               )}
@@ -403,15 +403,15 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
                   checked={hasEmail && notifyCustomer}
                   disabled={!hasEmail || isSubmitting}
                   onChange={(e) => setNotifyCustomer(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500 disabled:opacity-50 cursor-pointer"
+                  className="h-4 w-4 rounded border-[#997E67]/40 bg-[#160F0A] accent-[#FFDBBB] focus:ring-[#FFDBBB] disabled:opacity-50 cursor-pointer"
                 />
                 <label
                   htmlFor="notify_customer"
-                  className={`text-sm select-none ${hasEmail ? "text-slate-300 cursor-pointer" : "text-slate-500"}`}
+                  className={`text-sm select-none ${hasEmail ? "text-[#CCBEB1] cursor-pointer" : "text-[#CCBEB1]/50"}`}
                 >
                   Notify customer by email
                   {!hasEmail && (
-                    <span className="ml-2 inline-flex items-center rounded bg-slate-800 px-2 py-0.5 text-xs text-amber-400 border border-amber-500/20">
+                    <span className="ml-2 inline-flex items-center rounded bg-[#664930]/30 px-2 py-0.5 text-xs text-[#FFDBBB] border border-[#997E67]/30">
                       No email on file
                     </span>
                   )}
@@ -422,7 +422,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         )}
 
         <div className="space-y-2 md:col-span-2">
-          <label htmlFor="issue_description" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="issue_description" className="block text-sm font-medium text-[#CCBEB1]">
             Issue Description
           </label>
           <textarea
@@ -437,7 +437,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <label htmlFor="notes" className="block text-sm font-medium text-slate-300">
+          <label htmlFor="notes" className="block text-sm font-medium text-[#CCBEB1]">
             Notes
           </label>
           <textarea
@@ -451,17 +451,17 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         {/* Intake Checklist */}
-        <div className="md:col-span-2 space-y-4 rounded-xl border border-white/5 bg-slate-800/30 p-5">
+        <div className="md:col-span-2 space-y-4 rounded-xl border border-[#997E67]/20 bg-[#664930]/15 p-5">
           <div className="flex items-center gap-2 mb-1">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#FFDBBB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
-            <span className="text-sm font-semibold text-slate-200">Intake Checklist</span>
-            <span className="ml-auto text-xs text-slate-500">Protects against customer disputes</span>
+            <span className="text-sm font-semibold text-[#F5EBE1]">Intake Checklist</span>
+            <span className="ml-auto text-xs text-[#CCBEB1]/60">Protects against customer disputes</span>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2.5">Accessories Left Behind</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70 mb-2.5">Accessories Left Behind</p>
             <div className="flex flex-wrap gap-2">
               {ACCESSORIES.map((item) => {
                 const checked = checkedAccessories.includes(item);
@@ -472,15 +472,15 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
                     onClick={() => toggleItem(checkedAccessories, setCheckedAccessories, item)}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                       checked
-                        ? "border-blue-500/60 bg-blue-500/15 text-blue-300 shadow-sm"
-                        : "border-slate-700 bg-slate-800/60 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                        ? "border-[#FFDBBB]/70 bg-[#FFDBBB]/15 text-[#FFDBBB] shadow-sm shadow-[#FFDBBB]/10"
+                        : "border-[#997E67]/30 bg-[#664930]/20 text-[#CCBEB1]/70 hover:border-[#997E67] hover:text-[#F5EBE1]"
                     }`}
                   >
                     <span className={`h-3 w-3 rounded-sm border flex items-center justify-center shrink-0 ${
-                      checked ? "border-blue-400 bg-blue-500" : "border-slate-600"
+                      checked ? "border-[#FFDBBB] bg-[#FFDBBB]" : "border-[#997E67]/50"
                     }`}>
                       {checked && (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-[#2D1B0E]" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       )}
@@ -493,7 +493,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2.5">Physical Condition</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/70 mb-2.5">Physical Condition</p>
             <div className="flex flex-wrap gap-2">
               {CONDITIONS.map((item) => {
                 const checked = checkedConditions.includes(item);
@@ -504,15 +504,15 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
                     onClick={() => toggleItem(checkedConditions, setCheckedConditions, item)}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                       checked
-                        ? "border-amber-500/60 bg-amber-500/15 text-amber-300 shadow-sm"
-                        : "border-slate-700 bg-slate-800/60 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+                        ? "border-[#997E67] bg-[#664930]/40 text-[#FFDBBB] shadow-sm"
+                        : "border-[#997E67]/30 bg-[#664930]/20 text-[#CCBEB1]/70 hover:border-[#997E67] hover:text-[#F5EBE1]"
                     }`}
                   >
                     <span className={`h-3 w-3 rounded-sm border flex items-center justify-center shrink-0 ${
-                      checked ? "border-amber-400 bg-amber-500" : "border-slate-600"
+                      checked ? "border-[#997E67] bg-[#997E67]" : "border-[#997E67]/50"
                     }`}>
                       {checked && (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-[#F5EBE1]" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       )}
@@ -530,12 +530,12 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="group relative inline-flex items-center justify-center rounded-xl bg-blue-600 px-8 py-3 text-sm font-semibold text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden w-full sm:w-auto"
+          className="group relative inline-flex items-center justify-center rounded-xl bg-[#FFDBBB] px-8 py-3 text-sm font-semibold text-[#2D1B0E] shadow-[0_0_20px_rgba(255,219,187,0.25)] transition-all hover:bg-[#ffe7d1] hover:shadow-[0_0_30px_rgba(255,219,187,0.45)] hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden w-full sm:w-auto"
         >
           <div className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#2D1B0E]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
               Saving...
             </span>
           ) : (
@@ -546,22 +546,22 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
 
       {/* Confirmation step before sending customer notification email */}
       {showEmailConfirm && pendingPayload && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="glass-panel max-w-md w-full p-6 space-y-4 border border-blue-500/30 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="glass-panel max-w-md w-full p-6 space-y-4 border border-[#997E67]/40 shadow-2xl relative">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+              <div className="w-10 h-10 rounded-full bg-[#FFDBBB]/10 border border-[#FFDBBB]/20 flex items-center justify-center text-[#FFDBBB] shrink-0">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-base font-semibold text-slate-100">Send Status Notification</h3>
-                <p className="text-xs text-slate-400">Customer email confirmation</p>
+                <h3 className="text-base font-semibold text-[#F5EBE1]">Send Status Notification</h3>
+                <p className="text-xs text-[#CCBEB1]/70">Customer email confirmation</p>
               </div>
             </div>
 
-            <p className="text-sm text-slate-300">
-              This will email <strong className="text-blue-400 font-mono">{pendingPayload.customer_email}</strong>.
+            <p className="text-sm text-[#CCBEB1]">
+              This will email <strong className="text-[#FFDBBB] font-mono">{pendingPayload.customer_email}</strong>.
             </p>
 
             <div className="flex justify-end gap-3 pt-2">
@@ -572,7 +572,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
                   setPendingPayload(null);
                 }}
                 disabled={isSubmitting}
-                className="rounded-xl px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+                className="rounded-xl px-4 py-2 text-sm font-medium text-[#CCBEB1] hover:text-[#F5EBE1] hover:bg-[#664930]/30 transition"
               >
                 Cancel
               </button>
@@ -580,7 +580,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
                 type="button"
                 onClick={() => executeSave(pendingPayload)}
                 disabled={isSubmitting}
-                className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md hover:bg-blue-500 transition flex items-center gap-2"
+                className="rounded-xl bg-[#FFDBBB] px-5 py-2 text-sm font-semibold text-[#2D1B0E] shadow-md hover:bg-[#ffe7d1] transition flex items-center gap-2"
               >
                 {isSubmitting ? "Updating..." : "Confirm & Send"}
               </button>
