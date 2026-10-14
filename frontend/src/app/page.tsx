@@ -74,7 +74,7 @@ function buildDevicesCsv(devices: DeviceRecord[]) {
 function SkeletonBar({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`skeleton-shimmer h-4 rounded bg-slate-700/60 ${className}`}
+      className={`skeleton-shimmer h-4 rounded bg-[#664930]/40 ${className}`}
       aria-hidden="true"
     />
   );
@@ -95,7 +95,7 @@ function DeviceTableSkeleton() {
 
   return (
     <div
-      className="overflow-x-auto rounded-xl bg-slate-900/40 backdrop-blur-sm"
+      className="overflow-x-auto rounded-xl bg-[#20150E]/50 backdrop-blur-sm"
       role="status"
       aria-label="Loading device records"
     >
@@ -230,7 +230,7 @@ export default function HomePage() {
   if (authLoading || !user) {
     return (
       <main className="min-h-screen px-4 py-16 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-[#997E67]/30 border-t-[#FFDBBB] rounded-full animate-spin"></div>
       </main>
     );
   }
@@ -242,10 +242,10 @@ export default function HomePage() {
         {/* Header Section */}
         <div className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 drop-shadow-sm">
+            <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-[#FFDBBB] via-[#E4CBBA] to-[#CCBEB1] drop-shadow-sm">
               Device Records
             </h1>
-            <p className="mt-2 text-sm text-slate-400">Manage and track customer device repair status.</p>
+            <p className="mt-2 text-sm text-[#CCBEB1]/90">Manage and track customer device repair status.</p>
           </div>
 
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
@@ -253,25 +253,17 @@ export default function HomePage() {
               type="button"
               onClick={handleExportCsv}
               disabled={loading || devices.length === 0}
-              className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 px-5 py-3 text-sm font-semibold text-slate-100 shadow-lg transition-all hover:border-blue-500/50 hover:bg-slate-700 hover:shadow-blue-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center rounded-xl border border-[#997E67]/40 bg-[#664930]/35 px-5 py-3 text-sm font-semibold text-[#F5EBE1] shadow-lg transition-all hover:border-[#FFDBBB]/50 hover:bg-[#664930]/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               Export CSV
             </button>
 
-            {/* <Link
-              href="/track"
-              className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 px-5 py-3 text-sm font-semibold text-slate-300 shadow-lg transition-all hover:border-blue-500/50 hover:bg-slate-700 hover:text-white"
-            >
-              Public Tracker
-            </Link> */}
-
             <Link
               href="/new"
-              className="group relative inline-flex items-center justify-center rounded-xl bg-slate-800/80 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:bg-slate-700 hover:shadow-blue-500/25 border border-slate-700 hover:border-blue-500/50 overflow-hidden"
+              className="inline-flex items-center justify-center rounded-xl bg-[#FFDBBB] px-6 py-3 text-sm font-bold text-[#2D1B0E] shadow-[0_0_20px_rgba(255,219,187,0.25)] transition-all hover:bg-[#ffe5cd] hover:shadow-[0_0_28px_rgba(255,219,187,0.45)]"
             >
-              <div className="absolute inset-0 w-full h-full bg-linear-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <span className="relative z-10 flex items-center gap-2">
-                <span className="text-blue-400 text-lg leading-none">+</span> Add New Record
+              <span className="flex items-center gap-2">
+                <span className="text-[#2D1B0E] text-lg font-bold leading-none">+</span> Add New Record
               </span>
             </Link>
           </div>
@@ -284,7 +276,7 @@ export default function HomePage() {
             placeholder="Search by name, phone, or serial..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 rounded-xl glass-input px-4 py-3 text-sm"
+            className="flex-1 rounded-xl glass-input px-4 py-3 text-sm placeholder:text-[#CCBEB1]/50"
           />
           <select
             value={statusFilter}
@@ -292,22 +284,22 @@ export default function HomePage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full sm:w-48 rounded-xl glass-input px-4 py-3 text-sm appearance-none bg-slate-800"
+            className="w-full sm:w-48 rounded-xl glass-input px-4 py-3 text-sm appearance-none bg-[#241810] text-[#F5EBE1]"
           >
-            <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="in_progress">In Progress</option>
-            <option value="awaiting_approval">Awaiting Approval</option>
-            <option value="ready_for_pickup">Ready for Pickup</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="all" className="bg-[#241810]">All Statuses</option>
+            <option value="pending" className="bg-[#241810]">Pending</option>
+            <option value="in_progress" className="bg-[#241810]">In Progress</option>
+            <option value="awaiting_approval" className="bg-[#241810]">Awaiting Approval</option>
+            <option value="ready_for_pickup" className="bg-[#241810]">Ready for Pickup</option>
+            <option value="completed" className="bg-[#241810]">Completed</option>
+            <option value="cancelled" className="bg-[#241810]">Cancelled</option>
           </select>
         </div>
 
         {/* Content Area */}
-        <div className="glass-panel p-1 border border-white/5 shadow-2xl relative">
+        <div className="glass-panel p-1 border border-[#997E67]/20 shadow-2xl relative">
           {/* Subtle inner glow */}
-          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
+          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,219,187,0.03)] pointer-events-none"></div>
           
           {loading && <DeviceTableSkeleton />}
 
@@ -329,7 +321,7 @@ export default function HomePage() {
                 onSort={handleSort}
               />
               {devices.length > 0 && (
-                <div className="flex flex-col items-center justify-between gap-3 border-t border-white/5 px-4 py-5 text-sm text-slate-400 sm:flex-row">
+                <div className="flex flex-col items-center justify-between gap-3 border-t border-[#997E67]/20 px-4 py-5 text-sm text-[#CCBEB1] sm:flex-row">
                   <span>
                     Showing {devices.length} of {totalDevices} records
                   </span>
@@ -338,7 +330,7 @@ export default function HomePage() {
                       type="button"
                       onClick={() => setPage((currentPage) => currentPage + 1)}
                       disabled={loadingMore}
-                      className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-800/80 px-5 py-2.5 font-semibold text-slate-100 transition-all hover:border-blue-500/50 hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex items-center justify-center rounded-xl border border-[#997E67]/40 bg-[#664930]/35 px-5 py-2.5 font-semibold text-[#F5EBE1] transition-all hover:border-[#FFDBBB]/50 hover:bg-[#664930]/60 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {loadingMore ? "Loading..." : "Load More"}
                     </button>
