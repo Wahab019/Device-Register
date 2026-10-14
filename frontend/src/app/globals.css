@@ -1,18 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  /* Shared tokens keep the glass surfaces, page background, and text contrast
-     consistent across pages without repeating raw color values. */
-  --background: #0f172a; /* Slate 900 */
-  --foreground: #f8fafc; /* Slate 50 */
+  /* "Neutral elegance" Palette Tokens:
+     #FFDBBB - Warm Peach / Champagne
+     #CCBEB1 - Sand / Warm Greige
+     #997E67 - Warm Taupe / Muted Mocha
+     #664930 - Deep Espresso / Rich Umber
+  */
+  --palette-peach: #FFDBBB;
+  --palette-sand: #CCBEB1;
+  --palette-taupe: #997E67;
+  --palette-espresso: #664930;
+
+  --background: #160F0A; /* Warm deep dark espresso base */
+  --foreground: #F5EBE1; /* Soft warm ivory text */
   
-  --glass-bg: rgba(30, 41, 59, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.15);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --glass-bg: rgba(43, 30, 20, 0.55);
+  --glass-border: rgba(204, 190, 177, 0.16);
+  --glass-highlight: rgba(255, 219, 187, 0.12);
+  --glass-shadow: 0 12px 36px 0 rgba(10, 6, 3, 0.5);
 }
 
 @theme inline {
+  --color-neutral-peach: #FFDBBB;
+  --color-neutral-sand: #CCBEB1;
+  --color-neutral-taupe: #997E67;
+  --color-neutral-espresso: #664930;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -20,14 +34,13 @@
 }
 
 body {
-  /* Fixed radial lights add depth to the dashboard while the base color still
-     provides a predictable backdrop for dense tables and forms. */
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   background-image: 
-    radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
+    radial-gradient(circle at 15% 40%, rgba(102, 73, 48, 0.35), transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(153, 126, 103, 0.25), transparent 40%),
+    radial-gradient(circle at 50% 85%, rgba(255, 219, 187, 0.08), transparent 50%);
   background-attachment: fixed;
 }
 
@@ -35,33 +48,33 @@ body {
   panels and inputs throughout the application. */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
 }
 
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: 1rem; /* rounded-2xl */
 }
 
 .glass-input {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #f8fafc;
+  background: rgba(33, 22, 14, 0.75);
+  border: 1px solid rgba(153, 126, 103, 0.3);
+  color: #F5EBE1;
   transition: all 0.3s ease;
 }
 
 .glass-input:focus {
   outline: none;
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-  background: rgba(15, 23, 42, 0.8);
+  border-color: #FFDBBB;
+  box-shadow: 0 0 0 3px rgba(255, 219, 187, 0.2);
+  background: rgba(43, 30, 20, 0.9);
 }
 
 /* Motion is limited to ambient background movement and loading feedback so it
@@ -77,9 +90,9 @@ body {
 }
 
 @keyframes pulse-glow {
-  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(255, 219, 187, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 219, 187, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 219, 187, 0); }
 }
 
 .animate-pulse-glow {
@@ -94,9 +107,9 @@ body {
 .skeleton-shimmer {
   background-image: linear-gradient(
     90deg,
-    rgba(51, 65, 85, 0.45) 0%,
-    rgba(148, 163, 184, 0.28) 45%,
-    rgba(51, 65, 85, 0.45) 100%
+    rgba(51, 35, 24, 0.5) 0%,
+    rgba(153, 126, 103, 0.3) 45%,
+    rgba(51, 35, 24, 0.5) 100%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
@@ -273,12 +286,12 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.8); 
+  background: rgba(22, 15, 10, 0.9); 
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(71, 85, 105, 0.8);
+  background: rgba(153, 126, 103, 0.5);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.9);
+  background: rgba(204, 190, 177, 0.75);
 }

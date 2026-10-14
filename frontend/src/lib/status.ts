@@ -42,39 +42,39 @@ export const STATUS_STYLES: Record<
 > = {
   pending: {
     label: "Pending",
-    badgeClasses: "bg-slate-800/80 border-slate-700 text-slate-300 shadow-slate-900/50",
-    dotClasses: "bg-slate-400 ring-slate-500/20",
-    textClass: "text-slate-300",
+    badgeClasses: "bg-[#664930]/35 border-[#997E67]/40 text-[#CCBEB1] shadow-[#664930]/20",
+    dotClasses: "bg-[#CCBEB1] ring-[#CCBEB1]/20",
+    textClass: "text-[#CCBEB1]",
   },
   in_progress: {
     label: "In Progress",
-    badgeClasses: "bg-amber-900/20 border-amber-700/50 text-amber-400 shadow-amber-900/20",
-    dotClasses: "bg-amber-400 ring-amber-500/20",
-    textClass: "text-amber-400",
+    badgeClasses: "bg-[#FFDBBB]/15 border-[#FFDBBB]/40 text-[#FFDBBB] shadow-[#FFDBBB]/10",
+    dotClasses: "bg-[#FFDBBB] ring-[#FFDBBB]/30",
+    textClass: "text-[#FFDBBB]",
   },
   awaiting_approval: {
     label: "Awaiting Approval",
-    badgeClasses: "bg-purple-900/20 border-purple-700/50 text-purple-400 shadow-purple-900/20",
-    dotClasses: "bg-purple-400 ring-purple-500/20",
-    textClass: "text-purple-400",
+    badgeClasses: "bg-[#997E67]/30 border-[#997E67]/50 text-[#FFDBBB] shadow-[#997E67]/20",
+    dotClasses: "bg-[#997E67] ring-[#997E67]/30",
+    textClass: "text-[#FFDBBB]",
   },
   ready_for_pickup: {
     label: "Ready for Pickup",
-    badgeClasses: "bg-emerald-900/20 border-emerald-700/50 text-emerald-400 shadow-emerald-900/20",
+    badgeClasses: "bg-emerald-950/40 border-emerald-700/50 text-emerald-300 shadow-emerald-950/20",
     dotClasses: "bg-emerald-400 ring-emerald-500/20",
-    textClass: "text-emerald-400",
+    textClass: "text-emerald-300",
   },
   completed: {
     label: "Completed",
-    badgeClasses: "bg-blue-900/20 border-blue-700/50 text-blue-400 shadow-blue-900/20",
-    dotClasses: "bg-blue-400 ring-blue-500/20",
-    textClass: "text-blue-400",
+    badgeClasses: "bg-[#CCBEB1]/15 border-[#CCBEB1]/30 text-[#CCBEB1] shadow-[#CCBEB1]/10",
+    dotClasses: "bg-[#CCBEB1] ring-[#CCBEB1]/20",
+    textClass: "text-[#CCBEB1]",
   },
   cancelled: {
     label: "Cancelled",
-    badgeClasses: "bg-rose-900/20 border-rose-700/50 text-rose-400 shadow-rose-900/20",
+    badgeClasses: "bg-rose-950/40 border-rose-800/40 text-rose-300 shadow-rose-950/20",
     dotClasses: "bg-rose-400 ring-rose-500/20",
-    textClass: "text-rose-400",
+    textClass: "text-rose-300",
   },
 };
 
@@ -102,8 +102,8 @@ export function getStatusStyle(status: string) {
   }
   return {
     label: getStatusLabel(status),
-    badgeClasses: "bg-slate-800 text-slate-300 border-slate-700",
-    dotClasses: "bg-slate-400 ring-slate-500/20",
-    textClass: "text-slate-300",
+    badgeClasses: "bg-[#664930]/35 text-[#CCBEB1] border-[#997E67]/40",
+    dotClasses: "bg-[#CCBEB1] ring-[#CCBEB1]/20",
+    textClass: "text-[#CCBEB1]",
   };
 }

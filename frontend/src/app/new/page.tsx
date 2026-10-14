@@ -22,7 +22,7 @@ export default function NewDevicePage() {
   if (authLoading || !user) {
     return (
       <main className="min-h-screen px-4 py-16 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-[#997E67]/30 border-t-[#FFDBBB] rounded-full animate-spin"></div>
       </main>
     );
   }
@@ -33,15 +33,15 @@ export default function NewDevicePage() {
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 relative z-10">
         <Link
           href="/"
-          className="group mb-8 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-blue-400"
+          className="group mb-8 inline-flex items-center text-sm font-medium text-[#CCBEB1] transition hover:text-[#FFDBBB]"
         >
           <span className="mr-2 transition-transform group-hover:-translate-x-1">←</span> Back to records
         </Link>
 
-        <div className="glass-panel p-8 sm:p-10 relative">
-          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
+        <div className="glass-panel p-8 sm:p-10 relative border border-[#997E67]/20 shadow-2xl">
+          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,219,187,0.03)] pointer-events-none"></div>
           
-          <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 drop-shadow-sm">
+          <h1 className="mb-8 text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-[#FFDBBB] via-[#E4CBBA] to-[#CCBEB1] drop-shadow-sm">
             Add New Device Record
           </h1>
 

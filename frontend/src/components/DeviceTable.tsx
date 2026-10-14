@@ -46,9 +46,9 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
   // message instead of an empty table with no explanation.
   if (devices.length === 0) {
     return (
-      <div className="flex min-h-75 items-center justify-center rounded-xl border border-dashed border-slate-700/50 bg-slate-800/20 px-4 py-8 text-center text-slate-400">
+      <div className="flex min-h-75 items-center justify-center rounded-xl border border-dashed border-[#997E67]/30 bg-[#664930]/15 px-4 py-8 text-center text-[#CCBEB1]">
         <div className="flex flex-col items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-slate-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-[#997E67] mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
           </svg>
           <p>No device records yet.</p>
@@ -58,58 +58,58 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl bg-slate-900/40 backdrop-blur-sm">
-      <table className="w-full min-w-full text-left text-sm text-slate-300">
-        <thead className="bg-slate-800/50 text-slate-400 border-b border-white/5 uppercase tracking-wider text-xs font-semibold">
+    <div className="overflow-x-auto rounded-xl bg-[#20150E]/60 backdrop-blur-sm">
+      <table className="w-full min-w-full text-left text-sm text-[#CCBEB1]">
+        <thead className="bg-[#2B1D14]/80 text-[#CCBEB1] border-b border-[#997E67]/20 uppercase tracking-wider text-xs font-semibold">
           <tr>
             {/* Sortable headings report the selected column and delegate the
               actual ordering state to the dashboard that owns the query. */}
             <th 
-              className="px-6 py-4 rounded-tl-xl cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
+              className="px-6 py-4 rounded-tl-xl cursor-pointer hover:bg-[#664930]/30 transition-colors select-none"
               onClick={() => onSort("customer_name")}
             >
               <div className="flex items-center gap-1">
                 Customer Name
                 {sortColumn === "customer_name" && (
-                  <span className="text-blue-400">{formatSortDirection(sortDirection)}</span>
+                  <span className="text-[#FFDBBB]">{formatSortDirection(sortDirection)}</span>
                 )}
               </div>
             </th>
             <th className="whitespace-nowrap px-6 py-4">Phone</th>
             <th className="px-6 py-4">Device</th>
             <th 
-              className="whitespace-nowrap px-6 py-4 cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
+              className="whitespace-nowrap px-6 py-4 cursor-pointer hover:bg-[#664930]/30 transition-colors select-none"
               onClick={() => onSort("status")}
             >
               <div className="flex items-center gap-1">
                 Status
                 {sortColumn === "status" && (
-                  <span className="text-blue-400">{formatSortDirection(sortDirection)}</span>
+                  <span className="text-[#FFDBBB]">{formatSortDirection(sortDirection)}</span>
                 )}
               </div>
             </th>
             <th 
-              className="whitespace-nowrap px-6 py-4 cursor-pointer hover:bg-slate-700/50 transition-colors select-none"
+              className="whitespace-nowrap px-6 py-4 cursor-pointer hover:bg-[#664930]/30 transition-colors select-none"
               onClick={() => onSort("date_received")}
             >
               <div className="flex items-center gap-1">
                 Date Received
                 {sortColumn === "date_received" && (
-                  <span className="text-blue-400">{formatSortDirection(sortDirection)}</span>
+                  <span className="text-[#FFDBBB]">{formatSortDirection(sortDirection)}</span>
                 )}
               </div>
             </th>
             <th className="px-6 py-4 text-right rounded-tr-xl">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-[#997E67]/15">
           {/* Render one table row with the device details and its view link. */}
           {devices.map((device) => {
             const status = getStatusStyle(device.status);
 
             return (
-              <tr key={device.id} className="transition-all duration-200 hover:bg-slate-800/60 group relative z-0">
-                <td className="px-6 py-4 font-medium text-slate-200">
+              <tr key={device.id} className="transition-all duration-200 hover:bg-[#664930]/25 group relative z-0">
+                <td className="px-6 py-4 font-medium text-[#F5EBE1]">
                   <div>{device.customer_name}</div>
                   {device.ticket_code && (
                     <div className="mt-0.5">
@@ -117,7 +117,7 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
                         href={`/track/${device.ticket_code}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-mono text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                        className="font-mono text-xs text-[#FFDBBB] hover:text-[#ffe5cd] transition-colors"
                         title="View public tracking page"
                       >
                         {device.ticket_code}
@@ -125,8 +125,8 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
                     </div>
                   )}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-slate-400">{device.customer_phone}</td>
-                <td className="px-6 py-4 text-slate-300">{formatDeviceName(device)}</td>
+                <td className="whitespace-nowrap px-6 py-4 text-[#CCBEB1]/75">{device.customer_phone}</td>
+                <td className="px-6 py-4 text-[#F5EBE1]">{formatDeviceName(device)}</td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <span
                     className={`inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium border shadow-sm ${status.badgeClasses}`}
@@ -134,7 +134,7 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
                     {status.label}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-slate-400 whitespace-nowrap">
+                <td className="px-6 py-4 text-[#CCBEB1]/75 whitespace-nowrap">
                   {new Date(device.date_received).toLocaleDateString(undefined, {
                     year: 'numeric',
                     month: 'short',
@@ -144,7 +144,7 @@ export default function DeviceTable({ devices, sortColumn, sortDirection, onSort
                 <td className="px-6 py-4 text-right">
                   <Link
                     href={`/${device.id}`}
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-800 text-slate-400 transition-all hover:bg-blue-600 hover:text-white hover:shadow-[0_0_15px_rgba(37,99,235,0.5)] group-hover:bg-slate-700"
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#664930]/40 text-[#CCBEB1] transition-all hover:bg-[#FFDBBB] hover:text-[#2D1B0E] hover:shadow-[0_0_15px_rgba(255,219,187,0.4)] group-hover:bg-[#664930]/70"
                     title="View Details"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
