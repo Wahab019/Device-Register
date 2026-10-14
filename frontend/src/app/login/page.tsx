@@ -59,23 +59,23 @@ export default function LoginPage() {
     <main className="min-h-screen px-4 py-16 sm:px-6 lg:px-8 flex flex-col items-center justify-center relative">
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-blue-950/60 border border-blue-800/40 px-3.5 py-1 text-xs font-semibold text-blue-400 mb-3">
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#664930]/35 border border-[#997E67]/40 px-3.5 py-1 text-xs font-semibold text-[#FFDBBB] mb-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#FFDBBB] animate-pulse"></span>
             Employee Access
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400">
+          <h1 className="text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-[#FFDBBB] via-[#E4CBBA] to-[#CCBEB1]">
             Staff Portal
           </h1>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-[#CCBEB1]/90">
             Sign in to manage devices, status updates, and repair charges.
           </p>
         </div>
 
-        <div className="glass-panel p-8 relative">
-          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
+        <div className="glass-panel p-8 relative border border-[#997E67]/20 shadow-2xl">
+          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,219,187,0.03)] pointer-events-none"></div>
 
           {/* Mode Tabs */}
-          <div className="flex rounded-xl bg-slate-800/70 p-1 mb-6 border border-white/5">
+          <div className="flex rounded-xl bg-[#20150E]/80 p-1 mb-6 border border-[#997E67]/25">
             <button
               type="button"
               onClick={() => {
@@ -84,8 +84,8 @@ export default function LoginPage() {
               }}
               className={`flex-1 rounded-lg py-2 text-xs font-semibold transition ${
                 mode === "login"
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-[#FFDBBB] text-[#2D1B0E] font-bold shadow-sm"
+                  : "text-[#CCBEB1] hover:text-[#F5EBE1]"
               }`}
             >
               Sign In
@@ -98,8 +98,8 @@ export default function LoginPage() {
               }}
               className={`flex-1 rounded-lg py-2 text-xs font-semibold transition ${
                 mode === "signup"
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-[#FFDBBB] text-[#2D1B0E] font-bold shadow-sm"
+                  : "text-[#CCBEB1] hover:text-[#F5EBE1]"
               }`}
             >
               Register Staff
@@ -190,7 +190,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full rounded-xl bg-[#FFDBBB] px-6 py-3 text-sm font-bold text-[#2D1B0E] shadow-[0_0_20px_rgba(255,219,187,0.25)] transition-all hover:bg-[#ffe5cd] hover:shadow-[0_0_28px_rgba(255,219,187,0.45)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {isSubmitting
                 ? "Authenticating..."
@@ -203,12 +203,12 @@ export default function LoginPage() {
 
         {/* Customer tracker redirection link */}
         <div className="mt-8 text-center">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[#CCBEB1]/70">
             Are you a customer checking your device repair?
           </p>
           <Link
             href="/track"
-            className="mt-1.5 inline-block text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+            className="mt-1.5 inline-block text-xs font-semibold text-[#FFDBBB] hover:text-[#ffe5cd] transition-colors"
           >
             Go to Public Device Tracker →
           </Link>
