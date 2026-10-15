@@ -114,17 +114,17 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
 
   return (
     <section className="screen-only">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#997E67]/20 pb-2 mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-taupe/20 pb-2 mb-5">
         <div>
           <h2 className="text-xl font-semibold text-[#F5EBE1]">Billing & Charges</h2>
-          <p className="text-xs text-[#CCBEB1]/70 mt-0.5">
+          <p className="text-xs text-neutral-sand/70 mt-0.5">
             Internal line items and computed repair total (hidden from public tracker).
           </p>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <span className="text-xs uppercase tracking-wider text-[#CCBEB1]/70 font-semibold">Total:</span>
-          <span className="font-mono text-xl font-bold text-[#FFDBBB]">
+          <span className="text-xs uppercase tracking-wider text-neutral-sand/70 font-semibold">Total:</span>
+          <span className="font-mono text-xl font-bold text-neutral-peach">
             {formatCurrency(total)}
           </span>
         </div>
@@ -132,7 +132,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
 
       {/* Locked state banner — shown whenever the repair is not actively in progress */}
       {!canEdit && (
-        <div className="mb-4 flex items-start gap-3 rounded-xl border border-[#997E67]/40 bg-[#664930]/20 px-4 py-3 text-sm text-[#CCBEB1]">
+        <div className="mb-4 flex items-start gap-3 rounded-xl border border-neutral-taupe/40 bg-[#664930]/20 px-4 py-3 text-sm text-[#CCBEB1]">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mt-0.5 shrink-0 text-[#FFDBBB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
