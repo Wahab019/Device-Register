@@ -39,9 +39,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Animated background light keeps the dark glass surfaces legible
           while remaining outside the interaction layer. */}
         <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-[#664930]/35 blur-[130px] animate-float" style={{ animationDelay: '0s' }}></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] rounded-full bg-[#997E67]/25 blur-[130px] animate-float" style={{ animationDelay: '3s' }}></div>
-          <div className="absolute top-[40%] left-[55%] w-[35%] h-[35%] rounded-full bg-[#FFDBBB]/15 blur-[110px] animate-float" style={{ animationDelay: '1.5s' }}></div>
+          <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-neutral-espresso/35 blur-[130px] animate-float" style={{ animationDelay: '0s' }}></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] rounded-full bg-neutral-taupe/25 blur-[130px] animate-float" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute top-[40%] left-[55%] w-[35%] h-[35%] rounded-full bg-neutral-peach/15 blur-[110px] animate-float" style={{ animationDelay: '1.5s' }}></div>
         </div>
         
         {/* Main content wrapped in AuthProvider for employee session state */}
