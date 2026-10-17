@@ -74,7 +74,7 @@ function buildDevicesCsv(devices: DeviceRecord[]) {
 function SkeletonBar({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`skeleton-shimmer h-4 rounded bg-[#664930]/40 ${className}`}
+      className={`skeleton-shimmer h-4 rounded bg-neutral-espresso/40 ${className}`}
       aria-hidden="true"
     />
   );
@@ -230,7 +230,7 @@ export default function HomePage() {
   if (authLoading || !user) {
     return (
       <main className="min-h-screen px-4 py-16 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-[#997E67]/30 border-t-[#FFDBBB] rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-neutral-taupe/30 border-t-neutral-peach rounded-full animate-spin"></div>
       </main>
     );
   }
@@ -242,10 +242,10 @@ export default function HomePage() {
         {/* Header Section */}
         <div className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-[#FFDBBB] via-[#E4CBBA] to-[#CCBEB1] drop-shadow-sm">
+            <h1 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-neutral-peach via-[#E4CBBA] to-neutral-sand drop-shadow-sm">
               Device Records
             </h1>
-            <p className="mt-2 text-sm text-[#CCBEB1]/90">Manage and track customer device repair status.</p>
+            <p className="mt-2 text-sm text-neutral-sand/90">Manage and track customer device repair status.</p>
           </div>
 
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
@@ -253,14 +253,14 @@ export default function HomePage() {
               type="button"
               onClick={handleExportCsv}
               disabled={loading || devices.length === 0}
-              className="inline-flex items-center justify-center rounded-xl border border-[#997E67]/40 bg-[#664930]/35 px-5 py-3 text-sm font-semibold text-[#F5EBE1] shadow-lg transition-all hover:border-[#FFDBBB]/50 hover:bg-[#664930]/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center rounded-xl border border-neutral-taupe/40 bg-neutral-espresso/35 px-5 py-3 text-sm font-semibold text-[#F5EBE1] shadow-lg transition-all hover:border-neutral-peach/50 hover:bg-neutral-espresso/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               Export CSV
             </button>
 
             <Link
               href="/new"
-              className="inline-flex items-center justify-center rounded-xl bg-[#FFDBBB] px-6 py-3 text-sm font-bold text-[#2D1B0E] shadow-[0_0_20px_rgba(255,219,187,0.25)] transition-all hover:bg-[#ffe5cd] hover:shadow-[0_0_28px_rgba(255,219,187,0.45)]"
+              className="inline-flex items-center justify-center rounded-xl bg-neutral-peach px-6 py-3 text-sm font-bold text-[#2D1B0E] shadow-[0_0_20px_rgba(255,219,187,0.25)] transition-all hover:bg-[#ffe5cd] hover:shadow-[0_0_28px_rgba(255,219,187,0.45)]"
             >
               <span className="flex items-center gap-2">
                 <span className="text-[#2D1B0E] text-lg font-bold leading-none">+</span> Add New Record
@@ -276,7 +276,7 @@ export default function HomePage() {
             placeholder="Search by name, phone, or serial..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 rounded-xl glass-input px-4 py-3 text-sm placeholder:text-[#CCBEB1]/50"
+            className="flex-1 rounded-xl glass-input px-4 py-3 text-sm placeholder:text-neutral-sand/50"
           />
           <select
             value={statusFilter}
@@ -297,10 +297,10 @@ export default function HomePage() {
         </div>
 
         {/* Content Area */}
-        <div className="glass-panel p-1 border border-[#997E67]/20 shadow-2xl relative">
+        <div className="glass-panel p-1 border border-neutral-taupe/20 shadow-2xl relative">
           {/* Subtle inner glow */}
           <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,219,187,0.03)] pointer-events-none"></div>
-          
+
           {loading && <DeviceTableSkeleton />}
 
           {!loading && error && (
@@ -321,7 +321,7 @@ export default function HomePage() {
                 onSort={handleSort}
               />
               {devices.length > 0 && (
-                <div className="flex flex-col items-center justify-between gap-3 border-t border-[#997E67]/20 px-4 py-5 text-sm text-[#CCBEB1] sm:flex-row">
+                <div className="flex flex-col items-center justify-between gap-3 border-t border-neutral-taupe/20 px-4 py-5 text-sm text-neutral-sand sm:flex-row">
                   <span>
                     Showing {devices.length} of {totalDevices} records
                   </span>
@@ -330,7 +330,7 @@ export default function HomePage() {
                       type="button"
                       onClick={() => setPage((currentPage) => currentPage + 1)}
                       disabled={loadingMore}
-                      className="inline-flex items-center justify-center rounded-xl border border-[#997E67]/40 bg-[#664930]/35 px-5 py-2.5 font-semibold text-[#F5EBE1] transition-all hover:border-[#FFDBBB]/50 hover:bg-[#664930]/60 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex items-center justify-center rounded-xl border border-neutral-taupe/40 bg-neutral-espresso/35 px-5 py-2.5 font-semibold text-[#F5EBE1] transition-all hover:border-neutral-peach/50 hover:bg-neutral-espresso/60 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {loadingMore ? "Loading..." : "Load More"}
                     </button>
