@@ -132,13 +132,13 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
 
       {/* Locked state banner — shown whenever the repair is not actively in progress */}
       {!canEdit && (
-        <div className="mb-4 flex items-start gap-3 rounded-xl border border-neutral-taupe/40 bg-[#664930]/20 px-4 py-3 text-sm text-[#CCBEB1]">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mt-0.5 shrink-0 text-[#FFDBBB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="mb-4 flex items-start gap-3 rounded-xl border border-neutral-taupe/40 bg-neutral-espresso/20 px-4 py-3 text-sm text-neutral-sand">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mt-0.5 shrink-0 text-neutral-peach" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
           <span>
             Charges can only be added or removed when the repair status is{" "}
-            <strong className="text-[#FFDBBB]">In Progress</strong>. Change the status first via{" "}
+            <strong className="text-neutral-peach">In Progress</strong>. Change the status first via{" "}
             <em>Edit Record</em>.
           </span>
         </div>
@@ -147,18 +147,18 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
       {/* Charges List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="rounded-xl bg-[#664930]/15 border border-[#997E67]/20 p-6 text-center text-[#CCBEB1]/70 text-sm">
-            <div className="w-6 h-6 border-2 border-[#997E67]/30 border-t-[#FFDBBB] rounded-full animate-spin mx-auto mb-2"></div>
+          <div className="rounded-xl bg-neutral-espresso/15 border border-neutral-taupe/20 p-6 text-center text-neutral-sand/70 text-sm">
+            <div className="w-6 h-6 border-2 border-neutral-taupe/30 border-t-neutral-peach rounded-full animate-spin mx-auto mb-2"></div>
             Loading charges...
           </div>
         ) : charges.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#997E67]/30 bg-[#664930]/10 p-6 text-center text-[#CCBEB1]/70 text-sm">
+          <div className="rounded-xl border border-dashed border-neutral-taupe/30 bg-neutral-espresso/10 p-6 text-center text-neutral-sand/70 text-sm">
             No charges added for this device yet.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl bg-[#664930]/15 border border-[#997E67]/20">
-            <table className="w-full text-left text-sm text-[#CCBEB1]">
-              <thead className="bg-[#664930]/25 text-xs uppercase tracking-wider text-[#CCBEB1]/70 border-b border-[#997E67]/20 font-semibold">
+          <div className="overflow-x-auto rounded-xl bg-neutral-espresso/15 border border-neutral-taupe/20">
+            <table className="w-full text-left text-sm text-neutral-sand">
+              <thead className="bg-neutral-espresso/25 text-xs uppercase tracking-wider text-neutral-sand/70 border-b border-neutral-taupe/20 font-semibold">
                 <tr>
                   <th className="px-5 py-3">Description</th>
                   <th className="px-5 py-3">Date Added</th>
@@ -166,13 +166,13 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
                   <th className="px-5 py-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#997E67]/20">
+              <tbody className="divide-y divide-neutral-taupe/20">
                 {charges.map((charge) => (
-                  <tr key={charge.id} className="hover:bg-[#664930]/30 transition-colors">
+                  <tr key={charge.id} className="hover:bg-neutral-espresso/30 transition-colors">
                     <td className="px-5 py-3.5 font-medium text-[#F5EBE1]">
                       {charge.description}
                     </td>
-                    <td className="px-5 py-3.5 text-xs text-[#CCBEB1]/70 whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-xs text-neutral-sand/70 whitespace-nowrap">
                       {new Date(charge.created_at).toLocaleDateString(undefined, {
                         year: "numeric",
                         month: "short",
@@ -202,12 +202,12 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="border-t border-[#997E67]/30 bg-[#664930]/25">
+              <tfoot className="border-t border-neutral-taupe/30 bg-neutral-espresso/25">
                 <tr>
-                  <td colSpan={2} className="px-5 py-3 text-xs uppercase tracking-wider font-semibold text-[#CCBEB1]/80">
+                  <td colSpan={2} className="px-5 py-3 text-xs uppercase tracking-wider font-semibold text-neutral-sand/80">
                     Computed Total
                   </td>
-                  <td className="px-5 py-3 font-mono font-bold text-[#FFDBBB] text-right">
+                  <td className="px-5 py-3 font-mono font-bold text-neutral-peach text-right">
                     {formatCurrency(total)}
                   </td>
                   <td></td>
@@ -221,10 +221,10 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
         {canEdit && (
           <form
             onSubmit={handleAddCharge}
-            className="rounded-xl bg-[#664930]/20 border border-[#997E67]/20 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-end gap-3"
+            className="rounded-xl bg-neutral-espresso/20 border border-neutral-taupe/20 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-end gap-3"
           >
             <div className="flex-1 space-y-1.5">
-              <label htmlFor="charge_desc" className="block text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/80">
+              <label htmlFor="charge_desc" className="block text-xs font-semibold uppercase tracking-wider text-neutral-sand/80">
                 Description
               </label>
               <input
@@ -239,7 +239,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
             </div>
 
             <div className="w-full sm:w-40 space-y-1.5">
-              <label htmlFor="charge_amount" className="block text-xs font-semibold uppercase tracking-wider text-[#CCBEB1]/80">
+              <label htmlFor="charge_amount" className="block text-xs font-semibold uppercase tracking-wider text-neutral-sand/80">
                 Amount (₦)
               </label>
               <input
@@ -257,7 +257,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center justify-center rounded-xl bg-[#FFDBBB] px-5 py-2.5 text-sm font-semibold text-[#2D1B0E] shadow-sm transition-all hover:bg-[#ffe7d1] hover:shadow-[0_0_15px_rgba(255,219,187,0.3)] disabled:opacity-50 shrink-0"
+              className="inline-flex items-center justify-center rounded-xl bg-neutral-peach px-5 py-2.5 text-sm font-semibold text-[#2D1B0E] shadow-sm transition-all hover:bg-[#ffe7d1] hover:shadow-[0_0_15px_rgba(255,219,187,0.3)] disabled:opacity-50 shrink-0"
             >
               {isSubmitting ? "Adding..." : "+ Add Charge"}
             </button>
