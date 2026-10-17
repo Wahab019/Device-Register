@@ -42,21 +42,21 @@ export const STATUS_STYLES: Record<
 > = {
   pending: {
     label: "Pending",
-    badgeClasses: "bg-[#664930]/35 border-[#997E67]/40 text-[#CCBEB1] shadow-[#664930]/20",
-    dotClasses: "bg-[#CCBEB1] ring-[#CCBEB1]/20",
-    textClass: "text-[#CCBEB1]",
+    badgeClasses: "bg-neutral-espresso/35 border-neutral-taupe/40 text-neutral-sand shadow-neutral-espresso/20",
+    dotClasses: "bg-neutral-sand ring-neutral-sand/20",
+    textClass: "text-neutral-sand",
   },
   in_progress: {
     label: "In Progress",
-    badgeClasses: "bg-[#FFDBBB]/15 border-[#FFDBBB]/40 text-[#FFDBBB] shadow-[#FFDBBB]/10",
-    dotClasses: "bg-[#FFDBBB] ring-[#FFDBBB]/30",
-    textClass: "text-[#FFDBBB]",
+    badgeClasses: "bg-neutral-peach/15 border-neutral-peach/40 text-neutral-peach shadow-neutral-peach/10",
+    dotClasses: "bg-neutral-peach ring-neutral-peach/30",
+    textClass: "text-neutral-peach",
   },
   awaiting_approval: {
     label: "Awaiting Approval",
-    badgeClasses: "bg-[#997E67]/30 border-[#997E67]/50 text-[#FFDBBB] shadow-[#997E67]/20",
-    dotClasses: "bg-[#997E67] ring-[#997E67]/30",
-    textClass: "text-[#FFDBBB]",
+    badgeClasses: "bg-neutral-taupe/30 border-neutral-taupe/50 text-neutral-peach shadow-neutral-taupe/20",
+    dotClasses: "bg-neutral-taupe ring-neutral-taupe/30",
+    textClass: "text-neutral-peach",
   },
   ready_for_pickup: {
     label: "Ready for Pickup",
@@ -66,9 +66,9 @@ export const STATUS_STYLES: Record<
   },
   completed: {
     label: "Completed",
-    badgeClasses: "bg-[#CCBEB1]/15 border-[#CCBEB1]/30 text-[#CCBEB1] shadow-[#CCBEB1]/10",
-    dotClasses: "bg-[#CCBEB1] ring-[#CCBEB1]/20",
-    textClass: "text-[#CCBEB1]",
+    badgeClasses: "bg-neutral-sand/15 border-neutral-sand/30 text-neutral-sand shadow-neutral-sand/10",
+    dotClasses: "bg-neutral-sand ring-neutral-sand/20",
+    textClass: "text-neutral-sand",
   },
   cancelled: {
     label: "Cancelled",
@@ -102,8 +102,8 @@ export function getStatusStyle(status: string) {
   }
   return {
     label: getStatusLabel(status),
-    badgeClasses: "bg-[#664930]/35 text-[#CCBEB1] border-[#997E67]/40",
-    dotClasses: "bg-[#CCBEB1] ring-[#CCBEB1]/20",
-    textClass: "text-[#CCBEB1]",
+    badgeClasses: "bg-neutral-espresso/35 text-neutral-sand border-neutral-taupe/40",
+    dotClasses: "bg-neutral-sand ring-neutral-sand/20",
+    textClass: "text-neutral-sand",
   };
 }
