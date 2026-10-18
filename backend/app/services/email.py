@@ -39,7 +39,7 @@ EMAIL_TEMPLATES: dict[str, dict[str, str]] = {
     "completed": {
         "subject": "Repair Completed: {ticket_code}",
         "headline": "Device Handed Back",
-        "message": "Thanks. Your device has been handed back.",
+        "message": "Your device has been handed back to you. Thank you for choosing us, we truly appreciate your patronage.",
     },
     "cancelled": {
         "subject": "Repair Closed: {ticket_code}",
