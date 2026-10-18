@@ -46,7 +46,7 @@ def verify_staff_key(
                     "role": "staff",
                 }
         except Exception as e:
-            logger.debug("Provided token is not a valid Supabase JWT: %s", e)
+            logger.error("Provided token is not a valid Supabase JWT: %s", e)
 
     # 2. Fallback: match static STAFF_API_KEY
     if expected_key and secrets.compare_digest(provided_token, expected_key.strip()):
