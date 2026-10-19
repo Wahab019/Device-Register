@@ -273,7 +273,7 @@ export default function DeviceForm({ initialData, onSuccess }: DeviceFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-1">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between">
             <label htmlFor="customer_email" className="block text-sm font-medium text-neutral-sand">
               Customer Email
             </label>

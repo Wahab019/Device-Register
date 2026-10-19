@@ -371,7 +371,7 @@ export default function DeviceDetailPage() {
             <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] pointer-events-none"></div>
 
             <div className="relative z-10">
-              <div className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-neutral-peach mb-2">
                     Device Details
@@ -383,7 +383,7 @@ export default function DeviceDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   {/* ── Quick Status Action Dropdown ────────────────────────── */}
                   {(() => {
                     const nextStatuses = getValidNextStatuses(record.status as Parameters<typeof getValidNextStatuses>[0]);
