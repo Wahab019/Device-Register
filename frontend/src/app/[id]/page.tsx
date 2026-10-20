@@ -702,14 +702,6 @@ export default function DeviceDetailPage() {
               <dt>Name</dt>
               <dd>{record.customer_name}</dd>
             </div>
-            {/* <div>
-            <dt>Phone</dt>
-            <dd>{record.customer_phone}</dd>
-          </div> */}
-            {/* <div>
-            <dt>Email</dt>
-            <dd>{record.customer_email ?? "-"}</dd>
-          </div> */}
           </dl>
         </section>
 
@@ -734,34 +726,6 @@ export default function DeviceDetailPage() {
             </div>
           </dl>
         </section>
-
-        {/* <section className="receipt-section">
-        <h2>Reported Issue</h2>
-        <p>{record.issue_description}</p>
-      </section>
-
-      {(() => {
-        const { rawNotes, accessories, conditions } = parseChecklist(record.notes);
-        return (
-          <>
-            {(accessories.length > 0 || conditions.length > 0) && (
-              <section className="receipt-section">
-                <h2>Intake Checklist</h2>
-                {accessories.length > 0 && (
-                  <p><strong>Accessories:</strong> {accessories.join(', ')}</p>
-                )}
-                {conditions.length > 0 && (
-                  <p><strong>Condition:</strong> {conditions.join(', ')}</p>
-                )}
-              </section>
-            )}
-            <section className="receipt-section">
-              <h2>Notes</h2>
-              <p>{rawNotes || "No notes provided."}</p>
-            </section>
-          </>
-        );
-      })()} */}
 
         {/* Charges & Total — always included on receipt so the customer sees the full bill */}
         <section className="receipt-section receipt-charges-section">
