@@ -11,6 +11,7 @@ type ChargesPanelProps = {
   status: string;
 };
 
+// Format Nigerian naira values in a readable way for the billing summary and table cells.
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
@@ -18,6 +19,8 @@ function formatCurrency(amount: number) {
   }).format(amount);
 }
 
+// Keep the amount input user-friendly by stripping invalid characters and inserting commas
+// without affecting the numeric value sent to the backend.
 function formatNumberWithCommas(value: string) {
   // Strip non-numeric/non-dot characters
   const cleanValue = value.replace(/[^0-9.]/g, "");
@@ -35,6 +38,8 @@ function formatNumberWithCommas(value: string) {
 }
 
 export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
+  // A repair can only be billed while it is actively in progress, otherwise the charge
+  // management controls are intentionally locked to prevent inconsistent data.
   const canEdit = status === "in_progress";
   const [charges, setCharges] = useState<Charge[]>([]);
   const [total, setTotal] = useState(0);
@@ -42,10 +47,11 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Form states
+  // Local form state for the charge description and monetary value entered by staff.
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
 
+  // Refresh the charge list whenever the device is changed or after a mutation.
   const fetchCharges = useCallback(async () => {
     try {
       setLoading(true);
@@ -53,7 +59,8 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
       setCharges(data.items || []);
       setTotal(data.total || 0);
     } catch (_err) {
-      // Gracefully handle if table or backend is pending
+      // The backend may still be spinning up or the table might not be ready yet.
+      // In that case, we show an empty state instead of crashing the panel.
       setCharges([]);
       setTotal(0);
     } finally {
@@ -65,6 +72,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
     fetchCharges();
   }, [fetchCharges]);
 
+  // Validate the input before sending a new line item to the API.
   const handleAddCharge = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const cleanDesc = description.trim();
@@ -98,6 +106,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
     }
   };
 
+  // Remove an item and immediately refresh the total so the totals remain in sync.
   const handleDeleteCharge = async (chargeId: string) => {
     try {
       setDeletingId(chargeId);
@@ -114,6 +123,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
 
   return (
     <section className="screen-only">
+      {/* Header shows the current billing summary for internal staff only. */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-taupe/20 pb-2 mb-5">
         <div>
           <h2 className="text-xl font-semibold text-[#F5EBE1]">Billing & Charges</h2>
@@ -144,7 +154,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
         </div>
       )}
 
-      {/* Charges List */}
+      {/* Charge table and empty/loading states for the device's billing history. */}
       <div className="space-y-4">
         {loading ? (
           <div className="rounded-xl bg-neutral-espresso/15 border border-neutral-taupe/20 p-6 text-center text-neutral-sand/70 text-sm">
@@ -223,6 +233,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
             onSubmit={handleAddCharge}
             className="rounded-xl bg-neutral-espresso/20 border border-neutral-taupe/20 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-end gap-3"
           >
+            {/* Description is the human-readable reason for the charge, such as part replacement or diagnostic work. */}
             <div className="flex-1 space-y-1.5">
               <label htmlFor="charge_desc" className="block text-xs font-semibold uppercase tracking-wider text-neutral-sand/80">
                 Description
@@ -238,6 +249,7 @@ export default function ChargesPanel({ deviceId, status }: ChargesPanelProps) {
               />
             </div>
 
+            {/* Amount is displayed with thousand separators but submitted as a plain numeric value. */}
             <div className="w-full sm:w-40 space-y-1.5">
               <label htmlFor="charge_amount" className="block text-xs font-semibold uppercase tracking-wider text-neutral-sand/80">
                 Amount (₦)
